@@ -1,0 +1,27 @@
+{
+  "name": "@killovsky/nasa",
+  "version": "1.0.0",
+  "description": "Módulo de acesso da API APOD da NASA.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KillovSky/NASA.git"
+  },
+  "keywords": [
+    "api",
+    "nasa",
+    "modulo",
+    "killovsky",
+    "iris",
+    "apod"
+  ],
+  "author": "Lucas R. - KillovSky",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/KillovSky/NASA/issues"
+  },
+  "homepage": "https://github.com/KillovSky/NASA#readme"
+}
