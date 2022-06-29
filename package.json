@@ -1,6 +1,6 @@
 {
   "name": "@killovsky/nasa",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Módulo de acesso da API APOD da NASA.",
   "main": "index.js",
   "scripts": {
@@ -13,10 +13,17 @@
   "keywords": [
     "api",
     "nasa",
-    "modulo",
-    "killovsky",
-    "iris",
-    "apod"
+	"astronomy",
+	"planet",
+	"galaxy",
+	"star",
+	"space",
+    "apod",
+	"universe",
+	"cosmo",
+	"sky",
+	"picture",
+	"science"
   ],
   "author": "Lucas R. - KillovSky",
   "license": "MIT",

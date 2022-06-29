@@ -1,0 +1,207 @@
+[
+	{
+		"key": "DEMO_KEY",
+		"date": "2017-12-24",
+		"error": false,
+		"download": false,
+		"dev_msg": false,
+		"data_msg": false,
+		"error_msg": false,
+		"best_image": "https://apod.nasa.gov/apod/image/1712/SpaceXLaunch_Bobchin_5407.jpg",
+		"code": 200,
+		"explain": {
+			"code": "OK",
+			"why": "The request is OK, this response depends on the HTTP method used."
+		},
+		"headers": {
+			"date": "Sun, 26 Jun 2022 23:20:45 GMT",
+			"content-type": "application/json",
+			"content-length": "1207",
+			"connection": "close",
+			"vary": "Accept-Encoding",
+			"x-ratelimit-limit": "0",
+			"x-ratelimit-remaining": "1991",
+			"access-control-allow-origin": "*",
+			"access-control-expose-headers": "X-RateLimit-Limit, X-RateLimit-Remaining",
+			"age": "0",
+			"via": "http/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])",
+			"x-cache": "MISS",
+			"strict-transport-security": "max-age=31536000; preload"
+		},
+		"nasa": {
+			"copyright": "Craig Bobchin",
+			"date": "2017-12-24",
+			"explanation": "What's happened to the sky? On Friday, the photogenic launch plume from a SpaceX rocket launch created quite a spectacle over parts of southern California and Arizona.  Looking at times like a giant space fish, the impressive rocket launch from Vandenberg Air Force Base near Lompoc, California, was so bright because it was backlit by the setting Sun. Lifting off during a minuscule one-second launch window, the Falcon 9 rocket successfully delivered to low Earth orbit ten Iridium NEXT satellites that are part of a developing global communications network. The plume from the first stage is seen on the right, while the soaring upper stage rocket is seen at the apex of the plume toward the left. Several good videos of the launch were taken.  The featured image was captured from Orange County, California, in a 2.5 second duration exposure.   Gallery: More images of the SpaceX launch",
+			"hdurl": "https://apod.nasa.gov/apod/image/1712/SpaceXLaunch_Bobchin_5407.jpg",
+			"thumbnail_url": false,
+			"media_type": "image",
+			"service_version": "v1",
+			"title": "SpaceX Rocket Launch Plume over California",
+			"url": "https://apod.nasa.gov/apod/image/1712/SpaceXLaunch_Bobchin_960.jpg"
+		}
+	},
+	{
+		"key": "DEMO_KEY",
+		"date": "2021-08-16",
+		"error": false,
+		"download": false,
+		"dev_msg": false,
+		"data_msg": false,
+		"error_msg": false,
+		"best_image": "https://apod.nasa.gov/apod/image/2108/PerseidNovaSprites_Korona_960.jpg",
+		"code": 200,
+		"explain": {
+			"code": "OK",
+			"why": "The request is OK, this response depends on the HTTP method used."
+		},
+		"headers": {
+			"date": "Sun, 26 Jun 2022 23:20:45 GMT",
+			"content-type": "application/json",
+			"content-length": "1207",
+			"connection": "close",
+			"vary": "Accept-Encoding",
+			"x-ratelimit-limit": "2000",
+			"x-ratelimit-remaining": "1991",
+			"access-control-allow-origin": "*",
+			"access-control-expose-headers": "X-RateLimit-Limit, X-RateLimit-Remaining",
+			"age": "0",
+			"via": "http/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])",
+			"x-cache": "MISS",
+			"strict-transport-security": "max-age=31536000; preload"
+		},
+		"nasa": {
+			"copyright": "Daniel Korona",
+			"date": "2021-08-16",
+			"explanation": "This was an unusual sky. It wasn't unusual because of the central band the Milky Way Galaxy, visible along the image left.  Most dark skies show part of the Milky Way. It wasn't unusual because of the bright meteor visible on the upper right. Many images taken during last week's Perseid Meteor Shower show meteors, although this Perseid was particularly bright. This sky wasn't unusual because of the red sprites, visible on the lower right. Although this type of lightning has only been noted in the past few decades, images of sprites are becoming more common. This sky wasn't unusual because of the nova, visible just above the image center. Novas bright enough to be seen with the unaided eye occur every few years, with pictured Nova RS Ophiuchus discovered about a week ago.  What was most unusual, though, was to capture all these things together, in a single night, on a single sky.  The unusual sky occurred above Zacatecas, Mexico.   Notable APOD Image Submissions: Perseid Meteor Shower 2021",
+			"hdurl": "https://apod.nasa.gov/apod/image/2108/PerseidNovaSprites_Korona_960.jpg",
+			"thumbnail_url": false,
+			"media_type": "image",
+			"service_version": "v1",
+			"title": "Perseid Meteor, Red Sprites, and Nova RS Ophiuchus",
+			"url": "https://apod.nasa.gov/apod/image/2108/PerseidNovaSprites_Korona_960.jpg"
+		}
+	},
+	{
+		"key": "DEMO_KEY",
+		"date": "2004-05-21",
+		"error": false,
+		"download": false,
+		"dev_msg": false,
+		"data_msg": false,
+		"error_msg": false,
+		"best_image": "https://apod.nasa.gov/apod/image/0405/venusphase_rummel.jpg",
+		"code": 200,
+		"explain": {
+			"code": "OK",
+			"why": "The request is OK, this response depends on the HTTP method used."
+		},
+		"headers": {
+			"date": "Sun, 26 Jun 2022 23:20:45 GMT",
+			"content-type": "application/json",
+			"content-length": "1207",
+			"connection": "close",
+			"vary": "Accept-Encoding",
+			"x-ratelimit-limit": "2000",
+			"x-ratelimit-remaining": "1991",
+			"access-control-allow-origin": "*",
+			"access-control-expose-headers": "X-RateLimit-Limit, X-RateLimit-Remaining",
+			"age": "0",
+			"via": "http/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])",
+			"x-cache": "MISS",
+			"strict-transport-security": "max-age=31536000; preload"
+		},
+		"nasa": {
+			"copyright": "John Rummel",
+			"date": "2004-05-21",
+			"explanation": "Venus is currently falling out of the western evening sky. Second planet from the Sun and third brightest celestial object after the Sun and Moon, Venus has been appreciated by casual sky gazers as a brilliant beacon above the horizon after sunset. But telescopic images have also revealed its dramatic phases. In fact, this thoughtful composite of telescopic views nicely illustrates the progression of phases and increase in apparent size undergone by Venus over the past few weeks. Gliding along its interior orbit, Venus has been catching up with planet Earth, growing larger as it draws near. At the same time, just as the Moon goes through phases, Venus' visible sunlit hemisphere has presented an increasingly slender, crescent shape. Now sharing the sky with a crescent Moon, on June 8th Venus will actually cross the face of the Sun, the first such transit since 1882.",
+			"hdurl": "https://apod.nasa.gov/apod/image/0405/venusphase_rummel.jpg",
+			"thumbnail_url": false,
+			"media_type": "image",
+			"service_version": "v1",
+			"title": "Phases of Venus",
+			"url": "https://apod.nasa.gov/apod/image/0405/venusphase_rummel_c1.jpg"
+		}
+	},
+	{
+		"key": "DEMO_KEY",
+		"date": "2014-03-19",
+		"error": false,
+		"download": false,
+		"dev_msg": false,
+		"data_msg": false,
+		"error_msg": false,
+		"best_image": "https://img.youtube.com/vi/LUW51lvIFjg/0.jpg",
+		"code": 200,
+		"explain": {
+			"code": "OK",
+			"why": "The request is OK, this response depends on the HTTP method used."
+		},
+		"headers": {
+			"date": "Sun, 26 Jun 2022 23:20:45 GMT",
+			"content-type": "application/json",
+			"content-length": "1207",
+			"connection": "close",
+			"vary": "Accept-Encoding",
+			"x-ratelimit-limit": "2000",
+			"x-ratelimit-remaining": "1991",
+			"access-control-allow-origin": "*",
+			"access-control-expose-headers": "X-RateLimit-Limit, X-RateLimit-Remaining",
+			"age": "0",
+			"via": "http/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])",
+			"x-cache": "MISS",
+			"strict-transport-security": "max-age=31536000; preload"
+		},
+		"nasa": {
+			"copyright": false,
+			"date": "2014-03-19",
+			"explanation": "When does the line between day and night become vertical? Tomorrow. Tomorrow is an equinox on planet Earth, a time of year when day and night are most nearly equal. At an equinox, the Earth's terminator -- the dividing line between day and night -- becomes vertical and connects the north and south poles. The above time-lapse video demonstrates this by displaying an entire year on planet Earth in twelve seconds. From geosynchronous orbit, the Meteosat satellite recorded these infrared images of the Earth every day at the same local time.  The video started at the September 2010 equinox with the terminator line being vertical. As the Earth revolved around the Sun, the terminator was seen to tilt in a way that provides less daily sunlight to the northern hemisphere, causing winter in the north. As the year progressed, the March 2011 equinox arrived halfway through the video, followed by the terminator tilting the other way, causing winter in the southern hemisphere -- and summer in the north. The captured year ends again with the September equinox, concluding another of billions of trips the Earth has taken -- and will take -- around the Sun.",
+			"hdurl": false,
+			"thumbnail_url": "https://img.youtube.com/vi/LUW51lvIFjg/0.jpg",
+			"media_type": "video",
+			"service_version": "v1",
+			"title": "Equinox on a Spinning Earth",
+			"url": "https://www.youtube.com/embed/LUW51lvIFjg?rel=0"
+		}
+	},
+	{
+		"key": "DEMO_KEY",
+		"date": "1998-11-11",
+		"error": false,
+		"download": false,
+		"dev_msg": false,
+		"data_msg": false,
+		"error_msg": false,
+		"best_image": "https://apod.nasa.gov/apod/image/9811/aurora2_jc.jpg",
+		"code": 200,
+		"explain": {
+			"code": "OK",
+			"why": "The request is OK, this response depends on the HTTP method used."
+		},
+		"headers": {
+			"date": "Sun, 26 Jun 2022 23:20:45 GMT",
+			"content-type": "application/json",
+			"content-length": "1207",
+			"connection": "close",
+			"vary": "Accept-Encoding",
+			"x-ratelimit-limit": "2000",
+			"x-ratelimit-remaining": "1991",
+			"access-control-allow-origin": "*",
+			"access-control-expose-headers": "X-RateLimit-Limit, X-RateLimit-Remaining",
+			"age": "0",
+			"via": "http/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])",
+			"x-cache": "MISS",
+			"strict-transport-security": "max-age=31536000; preload"
+		},
+		"nasa": {
+			"copyright": false,
+			"date": "1998-11-11",
+			"explanation": "On some nights the sky is the most interesting show in town.  This picture captures a particularly active and colorful display of aurora that occurred a month ago high above Alaska.  Auroras are more commonly seen by observers located near the Earth's poles.  Aurora light results from solar electrons and protons striking molecules high in the Earth's atmosphere.  Planetary aurora activity can sometimes be predicted after particularly active solar coronal mass ejections.",
+			"hdurl": "https://apod.nasa.gov/apod/image/9811/aurora2_jc.jpg",
+			"thumbnail_url": false,
+			"media_type": "image",
+			"service_version": "v1",
+			"title": "Aurora Above",
+			"url": "https://apod.nasa.gov/apod/image/9811/aurora2_jc_big.jpg"
+		}
+	}
+]
