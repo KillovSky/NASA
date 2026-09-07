@@ -1,10 +1,37 @@
 {
   "name": "@killovsky/nasa",
-  "version": "1.0.1",
-  "description": "Módulo de acesso da API APOD da NASA.",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "Cliente da NASA APOD (Astronomy Picture of the Day) para Node.js sem dependências, com CLI e suporte completo a TypeScript, ESM e CommonJS.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "nasa-apod": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "readme.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "test": "node test.js"
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "pretest": "npm run build",
+    "test": "node --import tsx --test tests/*.test.ts",
+    "test:watch": "node --import tsx --test --watch tests/*.test.ts",
+    "prepublishOnly": "npm run build"
   },
   "repository": {
     "type": "git",
@@ -13,22 +40,26 @@
   "keywords": [
     "api",
     "nasa",
-	"astronomy",
-	"planet",
-	"galaxy",
-	"star",
-	"space",
+    "astronomy",
     "apod",
-	"universe",
-	"cosmo",
-	"sky",
-	"picture",
-	"science"
+    "space",
+    "cli",
+    "typescript",
+    "esm",
+    "commonjs",
+    "zero-dependency"
   ],
-  "author": "Lucas R. - KillovSky",
+  "author": "KillovSky",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/KillovSky/NASA/issues"
   },
-  "homepage": "https://github.com/KillovSky/NASA#readme"
+  "homepage": "https://github.com/KillovSky/NASA#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "tsup": "^8.2.4",
+    "typescript": "^5.5.4",
+    "tsx": "^4.23.12",
+    "@types/node": "^20.14.15"
+  }
 }

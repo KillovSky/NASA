@@ -1,0 +1,56 @@
+cff-version: 1.2.0
+message: >-
+  Se você usar o @killovsky/nasa em pesquisas, publicações, projetos
+  acadêmicos ou projetos derivados, por favor cite usando as informações
+  abaixo. E obviamente, mencione a API da NASA que deu poder a esse projeto.
+
+type: software
+title: "@killovsky/nasa"
+abstract: >-
+  @killovsky/nasa é um cliente nativo, sem dependências de produção, para a
+  API APOD (Astronomy Picture of the Day) da NASA. O projeto é desenvolvido
+  em TypeScript e oferece suporte a ESM e CommonJS, além de uma interface de
+  linha de comando (CLI). Entre os recursos estão a busca da foto/vídeo
+  astronômico do dia (por data específica ou a de hoje), derivação automática
+  de miniatura para vídeos do YouTube/Vimeo quando a NASA não fornece uma, e
+  download opcional e seguro da melhor imagem/miniatura disponível para o
+  disco.
+
+authors:
+  - alias: "KillovSky"
+
+repository-code: "https://github.com/KillovSky/NASA"
+url: "https://www.npmjs.com/package/@killovsky/nasa"
+license: MIT
+version: "2.0.0"
+date-released: "2026-09-08"
+
+keywords:
+  - nasa
+  - apod
+  - astronomy
+  - astronomy-picture-of-the-day
+  - space
+  - api-client
+  - typescript
+  - nodejs
+  - esm
+  - commonjs
+  - cli
+  - zero-dependency
+
+references:
+  - type: website
+    title: "NASA APOD API"
+    url: "https://api.nasa.gov"
+    notes: "API oficial da NASA utilizada pelo cliente para buscar a Foto Astronômica do Dia."
+
+  - type: software
+    title: "TypeScript"
+    url: "https://www.typescriptlang.org"
+    notes: "Linguagem utilizada no desenvolvimento do projeto."
+
+  - type: software
+    title: "tsup"
+    url: "https://tsup.egoist.dev"
+    notes: "Ferramenta utilizada para empacotamento e geração das distribuições ESM e CommonJS."

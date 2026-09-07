@@ -1,237 +1,184 @@
-<p align="center"><img src="https://www.nasa.gov/sites/default/files/thumbnails/image/nasa-logo-web-rgb.png" width="425" height="210" alt="nasa-logo-web-rgb.png"/></p>
-<h5 align="center"><a href="https://www.nasa.gov/audience/forstudents/5-8/features/symbols-of-nasa.html/">[Source: Symbols of NASA]</a></h5>
-  
-### O que este módulo faz?  
-- Ele acessa a [[APOD - Astronomy Picture of the Day](https://apod.nasa.gov/apod/astropix.html)], uma das API's da NASA.  
-  
-### Vantagens de usar uma `API-KEY`:  
-- Você possui mais limites de uso da API.  
-  
-### Onde obter uma `API-KEY` **gratuitamente**:  
-- Você pode obter uma chave de acesso indo diretamente ao site da NASA, basta [clicar aqui](https://api.nasa.gov/).  
-  
-### O que este módulo tem de especial?  
-- Muitas coisas, afinal, isso foi feito para ter a melhor praticidade possível, confira abaixo:  
-  
-------  
-> 1. Neste módulo, os erros não afetam o funcionamento, o que significa que apesar de qualquer erro, os valores 'sempre' estarão lá para que você não seja afetado.  
->  
-> 2. Os erros serão inseridos na resposta com uma explicação sobre o que causou eles, facilitando para você entender.  
->  
-> 3. Em algumas datas, a API da NASA não tem certas `keys` como `hdurl` ou `copyright`, mas eles são inseridos neste módulo, retornando `false` por padrão, caso a NASA não tenha.  
->  
-> 4. Os headers estão inseridos na resposta, facilitando para saber detalhes, como a quantidade de usos restantes de sua `API-KEY`.  
->  
-> 5. Não existem dependências de módulos de terceiro, tudo é feito usando o puro `Node.js`.  
->  
-> 6. Cada linha do código possui uma explicação do que está rodando ou vai rodar, ou seja, o código INTEIRO é explicado, linha por linha.  
->  
-> 7. Parâmetros incorretos são automaticamente corrigidos, por exemplo, corrige a `data` se mal colocada, não sofre erros por usar uma `API-KEY` inválida e muito mais.  
->  
-> 8. As imagens são baixadas na melhor qualidade possível e apenas se tudo estiver OK durante a execução, evitando maiores erros.  
->  
-> 9. E muitas outras coisas, confira o código para entender!  
-------  
-  
-### Como testar este módulo:  
-- Basta abrir um terminal na pasta do módulo e digitar:  
-  
-```bash  
-npm test  
-```  
-  
-### Como utilizar este módulo:  
-- Existem diversas formas de utilizar, mas como se trata de um script que faz uso de `Promises`, irei dar dois exemplos que funcionam bem, lembrando, você pode rodar sem especificar nada pois também funciona desta forma.   
-  
-<details>  
-<summary><code>[Clique para exibir] → Descrição de cada parâmetro da execução</code></summary>  
-  
-```javascript  
-// Function especificada  
-APOD('API_KEY', 'DATA', 'DOWNLOAD', 'LOCAL')  
-  
-// Function sem especificar  
-APOD()  
-  
-/* --------------------------------- *  
-* 1° - API_KEY  
-* Valores: string  
-* Padrão: 'DEMO_KEY'  
-* ---------------------------------  
-* 2° - DATA  
-* Valores: string [YYYY-MM-DD]  
-* Exemplo: 2022-06-27  
-* Padrão: ''  
-* ---------------------------------  
-* 3° - DOWNLOAD  
-* Valores: boolean [true, false]  
-* Padrão: false  
-* ---------------------------------  
-* 4° - LOCAL  
-* Valores: string  
-* Padrão: ''  
-* --------------------------------- */  
-```  
-  
-</details>   
-  
-<details>  
-<summary><code>Exemplos de uso:</code></summary>  
-  
-```javascript  
-// Usando .then | Modo de uso padrão  
-const NASA = require('@killovsky/nasa');  
-NASA.APOD('API-KEY', 'DATA EM YYYY-MM-DD', 'DOWNLOAD', 'LOCAL').then(data => {  
-	// Faça seu código baseado na object 'data' aqui  
-	// Exemplo: console.log(data);  
-})  
-  
-// Usando await [async] | Modo de uso padrão  
-const NASA = require('@killovsky/nasa');  
-const data = await NASA.APOD('API-KEY', 'DATA EM YYYY-MM-DD', 'DOWNLOAD', 'LOCAL');  
-// Faça seu código aqui usando a const 'data'  
-// Exemplo: console.log(data);  
-```  
-  
-</details>  
-  
-<details>  
-<summary><code>Códigos já prontos [.then]:</code></summary>  
-  
-```javascript  
-// Código usando .then [Sem Download]  
-const NASA = require('@killovsky/nasa');  
-NASA.APOD('DEMO_KEY', '2022-06-26', false, false).then(data => console.log(data));  
-  
-// Código usando .then [Com download] [Certifique-se de que a pasta existe]  
-const NASA = require('@killovsky/nasa');  
-NASA.APOD('DEMO_KEY', '2022-06-26', true, './images').then(data => console.log(data));  
-```  
-  
-</details>  
-  
-<details>  
-<summary><code>Códigos já prontos [async/await]:</code></summary>  
-  
-```javascript  
-// Código usando await [Sem Download]  
-const NASA = require('@killovsky/nasa');  
-const data = await NASA.APOD('DEMO_KEY', '2022-06-26', false, false);  
-console.log(data);  
-  
-// Código usando .then [Com download] [Certifique-se de que a pasta existe]  
-const NASA = require('@killovsky/nasa');  
-const data = await NASA.APOD('DEMO_KEY', '2022-06-26', true, './images');  
-console.log(data);  
-  
-// Se você não sabe criar uma função async ou ainda não tiver uma, use este código abaixo:  
-(async () => {  
-	// Cole um dos códigos com await aqui dentro  
-})();  
-```  
-  
-</details>  
-  
-<details>  
-<summary><code>Exemplo de resultado com explicações:</code></summary>  
-  
-```JSON  
-{  
-	"key": "String | API-KEY",  
-	"date": "String | Data [YYYY-MM-DD]",  
-	"error": "true | false",  
-	"download": "String / false | Mensagens sobre o download se requisitado",  
-	"dev_msg": "String / false | Códigos de erros enviados pela NASA",  
-	"data_msg": "String / false | Mensagem de Erro [Caso a data não esteja OK]",  
-	"error_msg": "String / false | Mensagem de erro da requisição",  
-	"best_image": "String / false | URL com a melhor imagem/thumb disponível",  
-	"code": "Number | String | Código de erro HTTP",  
-	"explain": {  
-		"code": "Number / String | Código escrito de HTTP",  
-		"why": "String | Explicação do código HTTP"  
-	},  
-	"headers": {  
-		"date": "String | Data escrita da requisição",  
-		"content-type": "String | Tipo de resposta",  
-		"content-length": "Number | Tamanho da resposta",  
-		"x-ratelimit-limit": "Number | Limites de usos da API",  
-		"x-ratelimit-remaining": "Number | Limites de uso restantes",  
-		"Outros": "E alguns outros headers, faça uma requisição para obter todos."  
-	},  
-	"nasa": {  
-		"copyright": "String / false | Copyright da imagem da NASA",  
-		"date": "String / false | Data do dia dos dados da NASA",  
-		"explanation": "String / false | Descrição do evento da NASA",  
-		"hdurl": "String / false | URL com mídia HD do evento",  
-		"thumbnail_url": "String / false | Thumbnail, caso seja um video",  
-		"media_type": "String / false | Tipo de mídia",  
-		"service_version": "String / false | Versão da API",  
-		"title": "String / false | Titulo do evento",  
-		"url": "String / false | URL com mídia padrão do evento"  
-	}  
-}  
-```  
-  
-</details>  
-  
-<details>  
-<summary><code>Exemplo utilizável de resultado:</code></summary>  
-  
-```JSON  
-{  
-	"key": "DEMO_KEY",  
-	"date": "2022-06-26",  
-	"error": false,  
-	"download": false, 
-	"dev_msg": false,  
-	"data_msg": false,  
-	"error_msg": false,  
-	"best_image": "https://apod.nasa.gov/apod/image/1712/SpaceXLaunch_Bobchin_5407.jpg",  
-	"code": 200,  
-	"explain": {  
-		"code": "OK",  
-		"why": "The request is OK, this response depends on the HTTP method used."  
-	},  
-	"headers": {  
-		"date": "Sun, 26 Jun 2022 23:20:45 GMT",  
-		"content-type": "application/json",  
-		"content-length": "1207",  
-		"connection": "close",  
-		"vary": "Accept-Encoding",  
-		"x-ratelimit-limit": "2000",  
-		"x-ratelimit-remaining": "1991",  
-		"access-control-allow-origin": "*",  
-		"access-control-expose-headers": "X-RateLimit-Limit, X-RateLimit-Remaining",  
-		"age": "0",  
-		"via": "http/1.1 api-umbrella (ApacheTrafficServer [cMsSf ])",  
-		"x-cache": "MISS",  
-		"strict-transport-security": "max-age=31536000; preload"  
-	},  
-	"nasa": {  
-		"copyright": "Craig Bobchin",  
-		"date": "2017-12-24",  
-		"explanation": "What's happened to the sky? On Friday, the photogenic launch plume from a SpaceX rocket launch created quite a spectacle over parts of southern California and Arizona. Looking at times like a giant space fish, the impressive rocket launch from Vandenberg Air Force Base near Lompoc, California, was so bright because it was backlit by the setting Sun. Lifting off during a minuscule one-second launch window, the Falcon 9 rocket successfully delivered to low Earth orbit ten Iridium NEXT satellites that are part of a developing global communications network. The plume from the first stage is seen on the right, while the soaring upper stage rocket is seen at the apex of the plume toward the left. Several good videos of the launch were taken. The featured image was captured from Orange County, California, in a 2.5 second duration exposure. Gallery: More images of the SpaceX launch",  
-		"hdurl": "https://apod.nasa.gov/apod/image/1712/SpaceXLaunch_Bobchin_5407.jpg",  
-		"thumbnail_url": false,  
-		"media_type": "image",  
-		"service_version": "v1",  
-		"title": "SpaceX Rocket Launch Plume over California",  
-		"url": "https://apod.nasa.gov/apod/image/1712/SpaceXLaunch_Bobchin_960.jpg"  
-	}  
-}  
-```  
-  
-</details>   
-  
-### TO-DO  
-- [ ] Adquirir múltiplas respostas do servidor  
-- [ ] Tradução automática das respostas  
-- [ ] Informações sobre o Download  
-- [ ] 'Portar e Corrigir todos' os recursos da API  
-- [x] Downloads  
-  
-### Suporte  
-  
-- Se obtiver algum problema, você pode me dizer [Reportando nas Issues](https://github.com/KillovSky/NASA/issues).  
-- Confira outros projetos meus [Acessando Isto](https://github.com/KillovSky/NASA/).  
-- Se gostar, doe para me ajudar a continuar desenvolvendo, mais informações [Clicando Aqui](http://htmlpreview.github.io/?https://github.com/KillovSky/iris/blob/main/.readme/donates/page.html) - [Página do Projeto Íris]
+# @killovsky/nasa
+
+[![npm version](https://img.shields.io/npm/v/@killovsky/nasa.svg)](https://www.npmjs.com/package/@killovsky/nasa)
+[![CI](https://github.com/KillovSky/NASA/actions/workflows/ci.yml/badge.svg)](https://github.com/KillovSky/NASA/actions/workflows/ci.yml)
+[![npm downloads](https://img.shields.io/npm/dm/@killovsky/nasa.svg)](https://www.npmjs.com/package/@killovsky/nasa)
+[![license](https://img.shields.io/npm/l/@killovsky/nasa.svg)](./LICENSE)
+[![node](https://img.shields.io/node/v/@killovsky/nasa.svg)](./package.json)
+
+Cliente para a API **APOD** (Astronomy Picture of the Day) da NASA — sem dependências de terceiros, com CLI e suporte completo a TypeScript/ESM/CommonJS.
+
+## Índice
+
+- [@killovsky/nasa](#killovskynasa)
+  - [Índice](#índice)
+  - [Instalação](#instalação)
+  - [O que mudou na v2](#o-que-mudou-na-v2)
+  - [Uso (TypeScript / ESM)](#uso-typescript--esm)
+  - [Uso (CommonJS)](#uso-commonjs)
+  - [CLI](#cli)
+  - [Opções (`ApodOptions`)](#opções-apodoptions)
+  - [Formato da resposta (`ApodResponse`)](#formato-da-resposta-apodresponse)
+  - [Download de imagens](#download-de-imagens)
+  - [Vídeos (YouTube/Vimeo) e geração de miniatura](#vídeos-youtubevimeo-e-geração-de-miniatura)
+  - [Tratamento de erros](#tratamento-de-erros)
+  - [Segurança](#segurança)
+  - [Contribuindo](#contribuindo)
+  - [Changelog](#changelog)
+  - [Licença](#licença)
+
+## Instalação
+
+```bash
+npm i @killovsky/nasa
+npm i -g @killovsky/nasa   # para usar a CLI globalmente
+```
+
+## O que mudou na v2
+
+- Reescrito em TypeScript, compilado para ESM + CommonJS + `.d.ts`.
+- `https.get` manual trocado por `fetch` nativo (Node ≥ 18), sem dependências.
+- Lógica de correção de datas (`YYYY-MM-DD`, limite 1996–hoje) extraída para uma função mais pura e testável (`normalizeDate`), mas com o mesmo comportamento defensivo do módulo v1.x.x.
+- Download de imagem/thumbnail reescrito com `fetch` + `fs` (antes usava `http`/`https` manual), agora com validação de caminho e de protocolo (veja [Segurança](#segurança)).
+- CLI própria (`nasa-apod`).
+
+## Uso (TypeScript / ESM)
+
+```ts
+import { getAPOD } from '@killovsky/nasa';
+
+const apod = await getAPOD({ apiKey: 'DEMO_KEY', date: '2024-01-01' });
+console.log(apod.nasa.title, apod.best_image);
+```
+
+## Uso (CommonJS)
+
+```js
+const { getAPOD } = require('@killovsky/nasa');
+getAPOD().then((apod) => console.log(apod.best_image));
+```
+
+## CLI
+
+```bash
+nasa-apod
+nasa-apod --date 2024-01-01
+nasa-apod --download --path ./pics
+nasa-apod --json
+nasa-apod --help
+```
+
+| Opção             | Descrição                                                       |
+| ----------------- | ------------------------------------------------------------------ |
+| `--key <apiKey>`  | Chave da API da NASA (padrão: `DEMO_KEY`, com limite de requisições). |
+| `--date <data>`   | Data no formato `YYYY-MM-DD` (padrão: hoje).                       |
+| `--download`      | Baixa a imagem/miniatura para o disco.                              |
+| `--path <pasta>`  | Pasta de destino do download (padrão: `./NASA_IMAGES/`).           |
+| `--json`          | Imprime a resposta `ApodResponse` completa, em JSON.                |
+| `-h`, `--help`    | Mostra a mensagem de ajuda.                                         |
+
+## Opções (`ApodOptions`)
+
+| Campo          | Tipo      | Padrão              | Descrição                                    |
+| -------------- | --------- | ------------------- | ---------------------------------------------- |
+| `apiKey`       | `string`  | `"DEMO_KEY"`        | Chave da API da NASA (obtenha uma em [api.nasa.gov](https://api.nasa.gov) — a `DEMO_KEY` pública tem limite de requisições compartilhado). |
+| `date`         | `string`  | hoje                | Data `YYYY-MM-DD` (corrigida automaticamente, com aviso em `data_msg`, se fora do intervalo 1996–hoje ou malformada). |
+| `download`     | `boolean` | `false`             | Baixa a imagem (ou thumbnail, para vídeos) para o disco. |
+| `downloadPath` | `string`  | `"./NASA_IMAGES/"`  | Pasta de destino do download.                  |
+| `timeout`      | `number`  | `15000`             | Timeout da requisição, em ms.                  |
+
+## Formato da resposta (`ApodResponse`)
+
+`getAPOD()` **nunca lança exceção** — falhas de rede, timeout, erros da API da NASA (chave inválida, limite de requisições excedido, etc.) e dados malformados são todos capturados e refletidos no próprio objeto de retorno:
+
+| Campo        | Tipo                          | Descrição                                                                 |
+| ------------ | ------------------------------ | -------------------------------------------------------------------------- |
+| `date`       | `string`                       | Data efetivamente usada na requisição (`YYYY-MM-DD`).                     |
+| `error`      | `boolean`                       | `true` se a requisição falhou ou a NASA retornou um erro.                 |
+| `code`       | `number \| string`              | Código de status HTTP (ou código de erro de rede, ex.: `"ECONNREFUSED"`). |
+| `explain`    | `HttpCodeExplain \| undefined`  | Explicação legível do código de status, vinda de uma tabela embutida no pacote. |
+| `dev_msg`    | `string \| false`               | Código de erro técnico da API da NASA, quando presente.                    |
+| `data_msg`   | `string \| false`               | Aviso sobre correção automática da `date` (ex.: data futura ajustada para hoje). |
+| `error_msg`  | `string \| false`               | Mensagem de erro legível, quando `error` é `true`.                        |
+| `best_image` | `string \| false`               | A melhor URL de imagem disponível: HD para fotos, miniatura para vídeos.  |
+| `download`   | `string \| false`               | Mensagem de status do download, quando `download: true` foi usado.        |
+| `nasa`       | `ApodData`                      | Os dados brutos retornados pela API da NASA (título, explicação, URLs, etc.). |
+
+```ts
+const apod = await getAPOD({ date: '2024-01-01' });
+
+if (apod.error) {
+  console.error(apod.error_msg);
+} else {
+  console.log(apod.nasa.title);
+  console.log(apod.nasa.explanation);
+  console.log(apod.best_image); // HD, padrão, ou miniatura de vídeo — o que estiver disponível
+}
+```
+
+## Download de imagens
+
+```ts
+const apod = await getAPOD({ download: true, downloadPath: './fotos' });
+console.log(apod.download); // "Download concluído, salvo em fotos/2024-01-01.jpg"
+```
+
+- Se `downloadPath` não for informado, a pasta padrão `./NASA_IMAGES/` é criada automaticamente.
+- Se a imagem daquela data já tiver sido baixada antes, o download é pulado (sem sobrescrever).
+- O nome do arquivo é sempre `<data>.jpg`, onde `<data>` é validada antes de virar parte do caminho — veja [Segurança](#segurança).
+
+## Vídeos (YouTube/Vimeo) e geração de miniatura
+
+Quando o APOD do dia é um vídeo (`media_type: "video"`) e a NASA não retorna uma `thumbnail_url` própria, o pacote deriva uma automaticamente a partir da URL do vídeo, para YouTube e Vimeo:
+
+```ts
+import { youtubeThumbnail, vimeoThumbnail } from '@killovsky/nasa';
+
+youtubeThumbnail('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
+// => 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg'
+
+vimeoThumbnail('https://vimeo.com/927766087');
+// => 'https://vumbnail.com/927766087.jpg'
+```
+
+Essa miniatura (quando derivada) também vira `best_image` automaticamente, já que não existe uma "URL de imagem HD" para um vídeo.
+
+## Tratamento de erros
+
+`getAPOD()` é desenhada para nunca lançar (`throw`) — confira sempre `error`/`error_msg` em vez de usar `try/catch`:
+
+```ts
+const apod = await getAPOD({ apiKey: 'chave-invalida' });
+if (apod.error) {
+  console.error(`Erro ${apod.code}: ${apod.error_msg}`);
+}
+```
+
+Isso vale tanto para erros de rede (timeout, DNS, conexão recusada) quanto para erros retornados pela própria API da NASA (chave inválida, limite de requisições excedido, data fora do intervalo suportado, etc.).
+
+## Segurança
+
+Este pacote pode escrever arquivos em disco (`download: true`) a partir de dados que vêm de uma resposta de rede — a resposta da API da NASA. Duas proteções relevantes:
+
+- **Nome do arquivo**: o campo de data retornado pela API só é usado no caminho do arquivo se estiver estritamente no formato `YYYY-MM-DD`; qualquer outro valor é substituído por um nome seguro gerado localmente, e o caminho final é sempre verificado contra a pasta de destino.
+- **URL da imagem**: só `http:`/`https:` são aceitos antes de qualquer `fetch()` de download; outros esquemas (como `file:`) são rejeitados.
+
+Para detalhes completos e como reportar uma vulnerabilidade, veja [SECURITY.md](./SECURITY.md).
+
+## Contribuindo
+
+Contribuições são bem-vindas! Veja o [guia de contribuição](./CONTRIBUTING.md) para configurar o ambiente, rodar os testes e o fluxo de Pull Request. Ao participar, siga o [Código de Conduta](./CODE_OF_CONDUCT.md).
+
+Para reportar vulnerabilidades de segurança, siga o processo em [SECURITY.md](./SECURITY.md) — não abra uma issue pública.
+
+## Changelog
+
+Veja [CHANGELOG.md](./CHANGELOG.md) para o histórico de versões.
+
+## Licença
+
+MIT — veja [LICENSE](./LICENSE).
+
+---
+
+Este projeto não é afiliado, endossado ou patrocinado pela NASA. "NASA" e "APOD" são marcas da *National Aeronautics and Space Administration*; este pacote é apenas um cliente de código aberto para a API pública delas.

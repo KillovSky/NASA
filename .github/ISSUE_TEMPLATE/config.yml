@@ -1,0 +1,14 @@
+blank_issues_enabled: true
+contact_links:
+  - name: "💬 Suporte via Discord"
+    url: https://discord.gg/ZtN9UH7XZu
+    about: "Para dúvidas rápidas, configurações e suporte da comunidade."
+  - name: "🌳 Links"
+    url: https://linktr.ee/killovsky
+    about: "Outras redes e links úteis dos projetos KillovSky."
+  - name: "💰 Apoiar o projeto"
+    url: https://ko-fi.com/killovsky
+    about: "Se os códigos te ajudaram, considere apoiar o desenvolvimento."
+  - name: "🔑 Obter uma chave de API da NASA"
+    url: https://api.nasa.gov
+    about: "Se você está esbarrando no limite de requisições da DEMO_KEY, obtenha sua própria chave gratuita aqui."
