@@ -1,0 +1,52 @@
+[
+  {
+    "date": "2017-12-24",
+    "explanation": "What's happened to the sky? On Friday, the photogenic launch plume from a SpaceX rocket launch created quite a spectacle over parts of southern California and Arizona. Looking at times like a giant space fish, the impressive rocket launch from Vandenberg Air Force Base near Lompoc, California, was so bright because it was backlit by the setting Sun.",
+    "hdurl": "https://apod.nasa.gov/apod/image/1712/SpaceXLaunch_Bobchin_5407.jpg",
+    "media_type": "image",
+    "service_version": "v1",
+    "title": "SpaceX Rocket Launch Plume over California",
+    "url": "https://apod.nasa.gov/apod/image/1712/SpaceXLaunch_Bobchin_960.jpg",
+    "copyright": "Craig Bobchin"
+  },
+  {
+    "date": "2021-08-16",
+    "explanation": "What's happened to the Milky Way? In terms of human sky watching history, not much -- but in terms of a single exposure image, quite a lot. Featured here is a single 15-second wide-angle exposure of the night sky over Rusinowo, Poland, taken in mid-August.",
+    "hdurl": "https://apod.nasa.gov/apod/image/2108/PerseidNovaSprites_Korona_960.jpg",
+    "media_type": "image",
+    "service_version": "v1",
+    "title": "Perseid Meteor, Red Sprites, and Nova RS Ophiuchus",
+    "url": "https://apod.nasa.gov/apod/image/2108/PerseidNovaSprites_Korona_960.jpg",
+    "copyright": "Daniel Korona"
+  },
+  {
+    "date": "2004-05-21",
+    "explanation": "What causes Venus to have phases? The same reason the Moon has phases -- because both the Moon and Venus orbit the Sun and reflect sunlight from a surface that is always half illuminated by the Sun.",
+    "hdurl": "https://apod.nasa.gov/apod/image/0405/venusphase_rummel.jpg",
+    "media_type": "image",
+    "service_version": "v1",
+    "title": "Phases of Venus",
+    "url": "https://apod.nasa.gov/apod/image/0405/venusphase_rummel_c1.jpg",
+    "copyright": "John Rummel"
+  },
+  {
+    "date": "2014-03-19",
+    "explanation": "What would it look like to see the Earth spin? A time-lapse video composed of images taken by cameras on board the Elektro-L weather satellite answers this question dramatically.",
+    "hdurl": false,
+    "media_type": "video",
+    "service_version": "v1",
+    "title": "Equinox on a Spinning Earth",
+    "url": "https://www.youtube.com/embed/LUW51lvIFjg?rel=0",
+    "copyright": false
+  },
+  {
+    "date": "1998-11-11",
+    "explanation": "Sometimes the sky itself puts on a show. As the Sun dipped below the horizon, energetic particles from the Sun collided with the upper atmosphere of the Earth, producing a beautiful green aurora above a quiet horizon.",
+    "hdurl": "https://apod.nasa.gov/apod/image/9811/aurora2_jc.jpg",
+    "media_type": "image",
+    "service_version": "v1",
+    "title": "Aurora Above",
+    "url": "https://apod.nasa.gov/apod/image/9811/aurora2_jc_big.jpg",
+    "copyright": false
+  }
+]

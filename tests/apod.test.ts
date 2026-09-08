@@ -127,6 +127,79 @@ test('getAPOD: falha de rede vira error: true, sem lançar exceção', async () 
   }
 });
 
+// -- Comportamento "resposta sempre útil" (restaurado da v1.x.x) -------------
+
+test('REGRESSÃO (v1 parity): falha de rede ainda devolve uma foto de exemplo utilizável, não um objeto vazio', async () => {
+  globalThis.fetch = (async () => {
+    throw new Error('network down');
+  }) as unknown as typeof fetch;
+  try {
+    const result = await getAPOD();
+    assert.equal(result.error, true);
+    assert.equal(result.fallback, true);
+    assert.notEqual(result.nasa.title, false);
+    assert.notEqual(result.best_image, false);
+    assert.equal(typeof result.explain, 'object');
+  } finally {
+    restoreFetch();
+  }
+});
+
+test('REGRESSÃO (v1 parity): timeout (abort) devolve uma foto de exemplo utilizável', async () => {
+  globalThis.fetch = (async (_url: unknown, init?: { signal?: AbortSignal }) => {
+    return new Promise((_resolve, reject) => {
+      init?.signal?.addEventListener('abort', () => {
+        const err = new Error('The operation was aborted');
+        err.name = 'AbortError';
+        reject(err);
+      });
+    });
+  }) as unknown as typeof fetch;
+  try {
+    const result = await getAPOD({ timeout: 10 });
+    assert.equal(result.error, true);
+    assert.equal(result.fallback, true);
+    assert.notEqual(result.best_image, false);
+  } finally {
+    restoreFetch();
+  }
+});
+
+test('REGRESSÃO (v1 parity): erro reportado pela própria API da NASA (corpo com "code") também devolve uma foto de exemplo', async () => {
+  mockSequence({ status: 429, json: async () => ({ code: 429, msg: 'Limite excedido' }) });
+  try {
+    const result = await getAPOD();
+    assert.equal(result.error, true);
+    assert.equal(result.fallback, true);
+    assert.notEqual(result.nasa.title, false);
+    assert.notEqual(result.best_image, false);
+  } finally {
+    restoreFetch();
+  }
+});
+
+test('REGRESSÃO (v1 parity): erro reportado pela própria API da NASA (formato "error") também devolve uma foto de exemplo', async () => {
+  mockSequence({ status: 400, json: async () => ({ error: { code: 'BAD_REQUEST', message: 'Data inválida' } }) });
+  try {
+    const result = await getAPOD();
+    assert.equal(result.error, true);
+    assert.equal(result.fallback, true);
+    assert.notEqual(result.best_image, false);
+  } finally {
+    restoreFetch();
+  }
+});
+
+test('getAPOD: resposta bem-sucedida nunca é marcada como fallback', async () => {
+  mockSequence({ status: 200, json: async () => SAMPLE_APOD });
+  try {
+    const result = await getAPOD({ date: '2024-01-01' });
+    assert.equal(result.fallback, false);
+  } finally {
+    restoreFetch();
+  }
+});
+
 // -- Vídeos (YouTube/Vimeo) ----------------------------------------------------
 
 test('getAPOD: vídeo do YouTube sem thumbnail_url da NASA gera uma via youtubeThumbnail', async () => {
@@ -183,6 +256,23 @@ test('youtubeThumbnail: não trava (ReDoS) em entrada adversarial', () => {
 test('vimeoThumbnail: extrai o ID numérico da URL', () => {
   assert.equal(vimeoThumbnail('https://vimeo.com/927766087'), 'https://vumbnail.com/927766087.jpg');
   assert.equal(vimeoThumbnail('https://example.com/not-vimeo'), false);
+});
+
+test('vimeoThumbnail: extrai o último segmento numérico em URLs com múltiplos segmentos de path', () => {
+  assert.equal(vimeoThumbnail('https://player.vimeo.com/video/927766087'), 'https://vumbnail.com/927766087.jpg');
+  assert.equal(
+    vimeoThumbnail('https://vimeo.com/groups/nome/videos/927766087'),
+    'https://vumbnail.com/927766087.jpg',
+  );
+  assert.equal(vimeoThumbnail('https://vimeo.com/927766087?x=1'), 'https://vumbnail.com/927766087.jpg');
+  assert.equal(vimeoThumbnail('https://example.com/927766087'), false);
+});
+
+test('REGRESSÃO (ReDoS/CodeQL #1): vimeoThumbnail não trava em entrada adversarial cheia de barras', () => {
+  const evil = `vimeo${'/'.repeat(80_000)}1`;
+  const t0 = Date.now();
+  vimeoThumbnail(evil);
+  assert.ok(Date.now() - t0 < 1000, 'vimeoThumbnail deve ser O(n), não deve travar em entrada grande');
 });
 
 // -- Download: caminho feliz e regressão de segurança -------------------------

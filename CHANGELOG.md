@@ -5,6 +5,29 @@ Todas as mudanças notáveis deste projeto são documentadas neste arquivo.
 O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
 e este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
+## [2.0.1] - 2026-09-08
+
+### Segurança
+- Corrigido potencial falha CWE 1333, 400, 730; Regex polinomial em dado não confiável (ReDoS)
+  — [CodeQL #1](https://github.com/KillovSky/NASA/security/code-scanning/1).
+
+### Adicionado
+- **`getAPODBulk()`**: busca várias datas de uma vez, de forma segura e responsável com a cota de requisições da API da NASA.
+  - Intervalo contínuo (`startDate`/`endDate`) vira **uma única requisição HTTP**, usando os parâmetros nativos `start_date`/`end_date` da própria API da NASA, em vez de uma requisição por dia.
+  - O intervalo pedido é sempre cortado no lado do cliente antes de qualquer `fetch()`, respeitando um teto (`maxDates`, padrão e máximo `MAX_BULK_DATES = 366`), para nunca disparar uma requisição pedindo um intervalo desproporcional.
+  - Datas específicas e não-contíguas (`dates`) são buscadas em um pool com concorrência limitada (`concurrency`, padrão e máximo `MAX_BULK_CONCURRENCY = 10`), nunca todas de uma vez, e nunca acima do teto mesmo se um valor maior for explicitamente pedido.
+  - Datas duplicadas em `dates` são removidas antes de contar para o limite e antes de gerar qualquer requisição.
+  - Nunca lança exceção por causa de uma data problemática: cada item do lote tem seu próprio `error`/`fallback`, sem derrubar as demais.
+  - Suporte na CLI via `--start`/`--end`/`--dates`/`--max`/`--concurrency`.
+  - Cobertura de testes dedicada (`tests/bulk.test.ts`) incluindo regressões para uso responsável da API: requisição única para intervalos, corte de intervalo desproporcional, dedupe, respeito ao limite de concorrência mesmo sob pedido abusivo, e isolamento de falhas por item.
+- **Resposta sempre útil, mesmo com erro** (comportamento restaurado da v1.x.x, perdido na reescrita 2.0.0): quando `getAPOD()` falha — erro de rede, timeout, erro reportado pela própria API da NASA — a resposta deixa de vir com `nasa` praticamente vazio. Agora `nasa`/`best_image`/`thumbnail_url` são preenchidos com um exemplo real de APOD (`src/fallbackApods.json`), e um novo campo `fallback: boolean` no tipo `ApodResponse` avisa quando isso acontece. `error`/`error_msg`/`code`/`explain` continuam refletindo exatamente o que deu errado. O mesmo comportamento se aplica a `getAPODBulk()`. A CLI também foi atualizada para exibir o exemplo de fallback quando há erro.
+- Testes de regressão explícitos para a correção de ReDoS do Vimeo e para o comportamento de fallback (rede, timeout, erro da API, sucesso nunca marcado como fallback).
+
+### Alterado
+- Lógica interna de derivação de `thumbnail_url`/`best_image` extraída para uma função compartilhada (`deriveThumbnailAndBestImage`), reaproveitada por `getAPOD()` e `getAPODBulk()` para garantir exatamente o mesmo comportamento nos dois.
+
+[2.0.1]: https://github.com/KillovSky/NASA/releases/tag/v2.0.1
+
 ## [2.0.0] - 2026-09-08
 
 ### Segurança
