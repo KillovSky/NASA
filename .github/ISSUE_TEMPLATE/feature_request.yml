@@ -1,5 +1,5 @@
-name: "✨ Sugestão de Funcionalidade"
-description: "Tem uma ideia para melhorar o módulo? Compartilhe aqui."
+name: "Sugerir uma funcionalidade"
+description: "Tem uma ideia para o módulo? Conte aqui."
 labels: ["enhancement", "needs-triage"]
 body:
   - type: markdown

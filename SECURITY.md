@@ -1,40 +1,27 @@
 # Política de Segurança
 
-## Versões Suportadas
+## Versões com suporte
 
-| Versão  | Suporte de Segurança |
-|---------|----------------------|
-| 2.x.x   | ✅ Ativa              |
-| 1.x.x   | ❌ Sem suporte (legado) |
+| Versão | Suporte |
+| --- | --- |
+| 3.x | Sim |
+| 2.x | Não. Usa a API antiga do APOD, que sai do ar em 1º de dezembro de 2026. |
+| 1.x | Não |
 
-Recomendamos sempre usar a versão mais recente da série `2.x` e acima.
+## Reportar uma vulnerabilidade
 
-## Reportar uma Vulnerabilidade
+Não abra uma issue pública. Use um destes canais:
 
-**Não abra uma issue pública** para vulnerabilidades de segurança.
+1. [GitHub Security Advisories](https://github.com/KillovSky/NASA/security/advisories/new) (preferido): na aba Security do repositório, clique em "Report a vulnerability".
+2. Contato direto com o mantenedor: [linktr.ee/killovsky](https://linktr.ee/killovsky).
 
-Reporte vulnerabilidades de forma privada através de um dos canais abaixo:
+Inclua uma descrição do problema, como reproduzir, o impacto que você enxerga, a versão afetada e, se tiver, uma sugestão de correção.
 
-1. **GitHub Security Advisories** (preferido):
-   Acesse a aba [Security](https://github.com/KillovSky/NASA/security/advisories/new)
-   do repositório e clique em *"Report a vulnerability"*.
+## O que merece atenção
 
-2. **Redes Sociais Privadas** (contato direto com o mantenedor):
-   [linktr.ee/killovsky](https://linktr.ee/killovsky)
+O módulo grava arquivos em disco (opção `download`) usando dados que vêm da API da NASA:
 
-### O que incluir no reporte
+- O nome do arquivo usa a data da resposta, que só é aceita no formato `YYYY-MM-DD`. O caminho final também é conferido contra a pasta de destino.
+- A imagem só é baixada se a URL for `http:` ou `https:`.
 
-- Descrição clara da vulnerabilidade
-- Passos para reproduzir (proof-of-concept, se possível)
-- Impacto potencial estimado
-- Versão afetada
-- Sugestão de correção (opcional, mas bem-vinda)
-
-## Superfície de risco deste pacote
-
-Diferente de um cliente de API simples, este módulo pode **escrever arquivos em disco** (opção `download`) a partir de dados retornados pela API da NASA. Isso significa que dois pontos merecem atenção redobrada em qualquer contribuição:
-
-- **Nome/caminho do arquivo baixado** — nunca deve ser montado diretamente a partir de um campo vindo da resposta da API (`nasa.date`, ou qualquer outro) sem validação estrita de formato. O comportamento atual valida a data contra `^\d{4}-\d{2}-\d{2}$` antes de usá-la no caminho, e confere que o caminho final continua dentro da pasta de destino.
-- **URL da imagem baixada** — só `http:`/`https:` são aceitos antes de qualquer `fetch`. Mudanças que voltem a passar uma URL não validada diretamente para `fetch()`/`fs.writeFileSync()` não serão aceitas.
-
-Se você encontrar uma forma de contornar essas proteções, isso é justamente o tipo de problema que deve ser reportado de forma privada, como descrito acima.
+Mudanças que passem dados da resposta direto para `fs` ou `fetch()` sem essas conferências não serão aceitas. Se você achar um jeito de contornar alguma delas, reporte em privado pelos canais acima.

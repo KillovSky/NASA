@@ -1,56 +1,62 @@
 # Changelog
 
-Todas as mudanças notáveis deste projeto são documentadas neste arquivo.
+As mudanças notáveis do projeto ficam neste arquivo.
+O formato segue o [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/) e o projeto usa [Versionamento Semântico](https://semver.org/lang/pt-BR/).
 
-O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/),
-e este projeto segue [Versionamento Semântico](https://semver.org/lang/pt-BR/).
+## [3.0.0] - 2026-11-15
+
+A NASA migrou o APOD para a API do WordPress (`science.nasa.gov/wp-json/wp/v2/apod-basic`) e vai desligar a antiga em 1º de dezembro de 2026. Esta versão passa a usar a nova.
+
+### Alterado
+- Todas as requisições vão para `https://science.nasa.gov/wp-json/wp/v2/apod-basic`. A chave de API deixou de ser necessária; `apiKey` continua aceita e, se informada, é enviada como `api_key`.
+- Data única: usa a rota `/apod-basic/{YYMMDD}`. Sem data, pede `?per_page=1` para pegar o APOD mais recente.
+- `getAPODBulk()` com `startDate`/`endDate` usa `date_from`/`date_to` e percorre as páginas de 25 itens. Os resultados vêm em ordem crescente de data.
+- `nasa.url` agora é a página do APOD (igual a `nasa.permalink`) e não o arquivo da imagem. `best_image` usa `hdurl`.
+- `explanation` e `credit` chegam em HTML, como a API entrega.
+- Erros do WordPress (`{ code, message }`) são lidos em `error_msg` e `dev_msg`. Resposta que não é JSON, como uma página 502, também vira erro com o status.
+- Quando a requisição falha, o download não é mais tentado.
+- Os exemplos de `src/fallbackApods.json` foram trocados por APODs reais no formato novo.
+- O código foi reorganizado em `api.ts`, `apod.ts`, `bulk.ts`, `download.ts`, `media.ts` e `text.ts`. O objeto `_internal` e o ciclo de importação entre `index.ts` e `bulk.ts` deixaram de existir.
+- Os testes foram reescritos para o formato novo.
+
+### Adicionado
+- Campos novos em `nasa`: `post_id`, `permalink`, `alt`, `basic_html`, `basic_html_url`, `explanation_text`, `credit_text` e `video_url`.
+- `video_url` é lido de `basic_html` (MP4 da NASA ou iframe do YouTube/Vimeo).
+- Exportações novas: `toLegacyDate()` e `htmlToText()`.
+- Download: confere o status HTTP antes de gravar o arquivo.
+
+### Removido
+- `service_version` e `thumbnail_url`. A API nova não oferece `concept_tags`, `hd` nem `thumbs`.
+
+[3.0.0]: https://github.com/KillovSky/NASA/releases/tag/v3.0.0
 
 ## [2.0.1] - 2026-09-08
 
 ### Segurança
-- Corrigido potencial falha CWE 1333, 400, 730; Regex polinomial em dado não confiável (ReDoS)
-  — [CodeQL #1](https://github.com/KillovSky/NASA/security/code-scanning/1).
+- Corrigida a regex de `vimeoThumbnail` que podia ficar lenta com entradas montadas de propósito (ReDoS), apontada pelo [CodeQL #1](https://github.com/KillovSky/NASA/security/code-scanning/1).
 
 ### Adicionado
-- **`getAPODBulk()`**: busca várias datas de uma vez, de forma segura e responsável com a cota de requisições da API da NASA.
-  - Intervalo contínuo (`startDate`/`endDate`) vira **uma única requisição HTTP**, usando os parâmetros nativos `start_date`/`end_date` da própria API da NASA, em vez de uma requisição por dia.
-  - O intervalo pedido é sempre cortado no lado do cliente antes de qualquer `fetch()`, respeitando um teto (`maxDates`, padrão e máximo `MAX_BULK_DATES = 366`), para nunca disparar uma requisição pedindo um intervalo desproporcional.
-  - Datas específicas e não-contíguas (`dates`) são buscadas em um pool com concorrência limitada (`concurrency`, padrão e máximo `MAX_BULK_CONCURRENCY = 10`), nunca todas de uma vez, e nunca acima do teto mesmo se um valor maior for explicitamente pedido.
-  - Datas duplicadas em `dates` são removidas antes de contar para o limite e antes de gerar qualquer requisição.
-  - Nunca lança exceção por causa de uma data problemática: cada item do lote tem seu próprio `error`/`fallback`, sem derrubar as demais.
-  - Suporte na CLI via `--start`/`--end`/`--dates`/`--max`/`--concurrency`.
-  - Cobertura de testes dedicada (`tests/bulk.test.ts`) incluindo regressões para uso responsável da API: requisição única para intervalos, corte de intervalo desproporcional, dedupe, respeito ao limite de concorrência mesmo sob pedido abusivo, e isolamento de falhas por item.
-- **Resposta sempre útil, mesmo com erro** (comportamento restaurado da v1.x.x, perdido na reescrita 2.0.0): quando `getAPOD()` falha — erro de rede, timeout, erro reportado pela própria API da NASA — a resposta deixa de vir com `nasa` praticamente vazio. Agora `nasa`/`best_image`/`thumbnail_url` são preenchidos com um exemplo real de APOD (`src/fallbackApods.json`), e um novo campo `fallback: boolean` no tipo `ApodResponse` avisa quando isso acontece. `error`/`error_msg`/`code`/`explain` continuam refletindo exatamente o que deu errado. O mesmo comportamento se aplica a `getAPODBulk()`. A CLI também foi atualizada para exibir o exemplo de fallback quando há erro.
-- Testes de regressão explícitos para a correção de ReDoS do Vimeo e para o comportamento de fallback (rede, timeout, erro da API, sucesso nunca marcado como fallback).
-
-### Alterado
-- Lógica interna de derivação de `thumbnail_url`/`best_image` extraída para uma função compartilhada (`deriveThumbnailAndBestImage`), reaproveitada por `getAPOD()` e `getAPODBulk()` para garantir exatamente o mesmo comportamento nos dois.
+- `getAPODBulk()`: busca várias datas, por intervalo (`startDate`/`endDate`) ou por lista (`dates`), com limite de tamanho (`MAX_BULK_DATES`) e de concorrência (`MAX_BULK_CONCURRENCY`). Também na CLI, com `--start`, `--end`, `--dates`, `--max` e `--concurrency`.
+- Quando a requisição falha, `nasa` e `best_image` recebem um APOD de exemplo e `fallback` fica `true`, como na 1.x.
 
 [2.0.1]: https://github.com/KillovSky/NASA/releases/tag/v2.0.1
 
 ## [2.0.0] - 2026-09-08
 
 ### Segurança
-- **Path injection no download de imagem**: `dateForFilename` (usado para nomear o arquivo salvo em `downloadImage()`) vinha direto de `nasa.date`, um campo da resposta da API — dado de rede, não confiável. Um valor malformado (ex.: `"../../../../etc/cron.d/x"`) podia, em tese, escrever fora da pasta de destino. Agora esse valor é validado estritamente contra `^\d{4}-\d{2}-\d{2}$` antes de virar parte do caminho, com fallback para um timestamp gerado localmente, e há uma checagem adicional garantindo que o caminho final permanece dentro da pasta de destino.
-- **Download de URL sem validar protocolo**: `response.best_image` (derivado da resposta da API) era passado direto para `fetch()`, sem checar o esquema da URL. Agora só `http:`/`https:` são aceitos antes de qualquer requisição.
-- **Regex polinomial em dado não confiável (ReDoS)**: `youtubeThumbnail()` usava uma regex com `.*` no início *e* no fim combinado com alternação sobre a URL do vídeo (dado de rede), o que pode degradar para tempo polinomial em entradas adversariais. Reescrita para uma forma linear equivalente, sem as âncoras `.*` desnecessárias.
-- `date` agora também passa por `encodeURIComponent()` ao montar a URL da requisição (por consistência e defesa em profundidade; `apiKey` já era codificada).
+- O nome do arquivo baixado só aceita datas no formato `YYYY-MM-DD`, e o caminho final é conferido contra a pasta de destino.
+- Só URLs `http:` e `https:` são baixadas.
+- A regex de `youtubeThumbnail` foi reescrita para não ter custo polinomial.
 
 ### Adicionado
-- Reescrita completa em TypeScript, compilado para ESM + CommonJS + `.d.ts`.
-- CLI própria (`nasa-apod`).
-- Suporte a download da imagem/miniatura para o disco.
-- Derivação automática de miniatura para vídeos do YouTube/Vimeo quando a NASA não fornece uma.
-- Suíte de testes (`tests/*.test.ts`, `node:test` via `tsx`) cobrindo `normalizeDate`, `getAPOD` (sucesso, erros da API, falha de rede, derivação de thumbnail de vídeo) e `downloadImage`, incluindo testes de regressão explícitos para as três correções de segurança acima.
-- `youtubeThumbnail`/`vimeoThumbnail` agora são exportados publicamente (antes eram funções internas), para permitir testá-los isoladamente e reutilizá-los fora do fluxo de `getAPOD()`.
-- `normalizeDate`/`MIN_YEAR`/`NormalizedDate` agora são exportados publicamente pelo pacote.
-- Workflow de CI (`.github/workflows/ci.yml`) rodando a suíte de testes em matriz de Node 18/20/22/24 a cada push/PR.
-- Workflow de publish (`.github/workflows/publish.yml`) para publicar no npm a partir de uma release do GitHub.
-- Documentação de comunidade: `CONTRIBUTING.md`, `SECURITY.md`, `CODE_OF_CONDUCT.md`, `CITATION.cff`, templates de issue e de pull request.
+- Reescrita em TypeScript, com ESM, CommonJS e `.d.ts`.
+- CLI `nasa-apod`.
+- Download da imagem para o disco.
+- Miniatura automática para vídeos do YouTube e do Vimeo.
+- Testes com `node:test` e CI no GitHub Actions.
 
 ### Alterado
-- `https.get` manual trocado por `fetch` nativo (Node ≥ 18), sem dependências de execução.
-- Lógica de correção de datas (`YYYY-MM-DD`, limite 1996–hoje) extraída para uma função pura (`normalizeDate`), com o mesmo comportamento defensivo do módulo original.
-- `npm test` deixou de executar uma chamada real à API da NASA (`node dist/cli.js --date ... --json`) e passou a rodar a suíte de testes de verdade, sem tocar rede.
+- `https.get` foi trocado por `fetch`, que exige Node 18 ou mais novo.
+- A correção de datas virou a função `normalizeDate`.
 
 [2.0.0]: https://github.com/KillovSky/NASA/releases/tag/v2.0.0

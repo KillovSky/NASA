@@ -7,14 +7,10 @@ message: >-
 type: software
 title: "@killovsky/nasa"
 abstract: >-
-  @killovsky/nasa é um cliente nativo, sem dependências de produção, para a
-  API APOD (Astronomy Picture of the Day) da NASA. O projeto é desenvolvido
-  em TypeScript e oferece suporte a ESM e CommonJS, além de uma interface de
-  linha de comando (CLI). Entre os recursos estão a busca da foto/vídeo
-  astronômico do dia (por data específica ou a de hoje), derivação automática
-  de miniatura para vídeos do YouTube/Vimeo quando a NASA não fornece uma, e
-  download opcional e seguro da melhor imagem/miniatura disponível para o
-  disco.
+  @killovsky/nasa é um cliente, sem dependências de produção, para o APOD
+  (Astronomy Picture of the Day) da NASA. Escrito em TypeScript, funciona em
+  ESM e CommonJS e tem uma CLI. Busca o APOD por data, o mais recente ou
+  vários de uma vez, e pode baixar a imagem para o disco.
 
 authors:
   - alias: "KillovSky"
@@ -22,8 +18,8 @@ authors:
 repository-code: "https://github.com/KillovSky/NASA"
 url: "https://www.npmjs.com/package/@killovsky/nasa"
 license: MIT
-version: "2.0.0"
-date-released: "2026-09-08"
+version: "3.0.0"
+date-released: "2026-11-15"
 
 keywords:
   - nasa
@@ -41,16 +37,16 @@ keywords:
 
 references:
   - type: website
-    title: "NASA APOD API"
-    url: "https://api.nasa.gov"
-    notes: "API oficial da NASA utilizada pelo cliente para buscar a Foto Astronômica do Dia."
+    title: "APOD Feed and API User Guide"
+    url: "https://science.nasa.gov/wp-json/wp/v2/apod-basic"
+    notes: "API da NASA usada pelo cliente para buscar a Foto Astronômica do Dia."
 
   - type: software
     title: "TypeScript"
     url: "https://www.typescriptlang.org"
-    notes: "Linguagem utilizada no desenvolvimento do projeto."
+    notes: "Linguagem do projeto."
 
   - type: software
     title: "tsup"
     url: "https://tsup.egoist.dev"
-    notes: "Ferramenta utilizada para empacotamento e geração das distribuições ESM e CommonJS."
+    notes: "Empacotamento das versões ESM e CommonJS."

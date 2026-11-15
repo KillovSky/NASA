@@ -1,137 +1,110 @@
-/** Entrada de explicação de um status HTTP. */
+/** Descrição de um código de status HTTP (tabela em httpCodes.json). */
 export interface HttpCodeExplain {
   code: string;
   why: string;
 }
 
-/** Dados brutos da "Foto Astronômica do Dia" (APOD), como devolvidos pela API da NASA. */
+/**
+ * Um APOD como a API da NASA devolve, mais alguns campos calculados pelo módulo
+ * (`explanation_text`, `credit_text` e `video_url`). Campo ausente vira `false`.
+ */
 export interface ApodData {
-  /** Data da foto, no formato `YYYY-MM-DD`. */
+  /** Data do APOD, `YYYY-MM-DD`. */
   date: string | false;
-  /** Explicação/texto descritivo escrito pelos astrônomos da NASA. */
-  explanation: string | false;
-  /** URL da imagem em alta resolução, quando disponível. */
-  hdurl: string | false;
-  /** Tipo de mídia: `"image"` ou `"video"`. */
-  media_type: string | false;
-  /** Versão do serviço da API da NASA. */
-  service_version: string | false;
-  /** Título da foto/vídeo do dia. */
+  /** ID do post no WordPress da NASA. */
+  post_id: number | false;
   title: string | false;
-  /** URL da imagem (ou vídeo) em resolução padrão. */
-  url: string | false;
-  /** Créditos de direitos autorais, quando aplicável. */
+  /** Endereço da página do APOD em science.nasa.gov. */
+  permalink: string | false;
+  /** `image`, `video` ou `iframe`. */
+  media_type: string | false;
+  /** Explicação como vem da API, em HTML. */
+  explanation: string | false;
+  /** A mesma explicação em texto puro, sem o rótulo "Explanation:" e sem a dica do dia seguinte. */
+  explanation_text: string | false;
+  /** Crédito como vem da API, pode conter HTML. */
+  credit: string | false;
+  credit_text: string | false;
   copyright: string | false;
-  /** URL da miniatura, gerada automaticamente para vídeos do YouTube/Vimeo quando a NASA não fornece uma. */
-  thumbnail_url: string | false;
+  /** Texto alternativo da imagem. */
+  alt: string | false;
+  /** Na API nova, igual ao `permalink`: é a página do post, não a imagem. */
+  url: string | false;
+  /** Imagem em tamanho grande. Em vídeos, é a imagem de capa. */
+  hdurl: string | false;
+  /** Documento HTML completo da página, como string. */
+  basic_html: string | false;
+  basic_html_url: string | false;
+  /** Endereço do vídeo (MP4 ou iframe), extraído de `basic_html`. */
+  video_url: string | false;
   [key: string]: unknown;
 }
 
-/** Opções aceitas por `getAPOD()`. */
 export interface ApodOptions {
-  /** Chave da API da NASA. Padrão: a chave pública `DEMO_KEY` (com limite de requisições). */
+  /** Opcional. A API nova não exige chave; se vier preenchida, é enviada como `api_key`. */
   apiKey?: string;
-  /** Data no formato `YYYY-MM-DD`. Padrão: hoje. Datas inválidas/fora do intervalo são corrigidas automaticamente. */
+  /** `YYYY-MM-DD`. Sem data, busca o APOD mais recente. Datas inválidas são corrigidas e avisadas em `data_msg`. */
   date?: string;
-  /** Quando `true`, baixa a imagem (ou miniatura, para vídeos) para o disco. */
+  /** Baixa a imagem para o disco. */
   download?: boolean;
-  /** Pasta de destino dos downloads. Padrão: `./NASA_IMAGES/`. */
+  /** Pasta do download. Padrão: `./NASA_IMAGES/`. */
   downloadPath?: string;
-  /** Timeout da requisição, em milissegundos. Padrão: 15000. */
+  /** Tempo limite da requisição, em ms. Padrão: 15000. */
   timeout?: number;
 }
 
-/** O objeto de resposta completo retornado por `getAPOD()`. */
 export interface ApodResponse {
   date: string;
   error: boolean;
   code: number | string;
   explain: HttpCodeExplain | undefined;
+  /** Código técnico do erro, quando a API informa um (ex.: `rest_no_route`). */
   dev_msg: string | false;
+  /** Aviso quando a data pedida precisou ser corrigida. */
   data_msg: string | false;
   error_msg: string | false;
-  /** A melhor URL de imagem disponível: HD para fotos, miniatura para vídeos. */
+  /** Melhor imagem disponível: `hdurl` ou, na falta dela, a miniatura de um vídeo do YouTube/Vimeo. */
   best_image: string | false;
-  /** Mensagem de status do download, quando `download: true` foi usado. */
+  /** Resultado do download, quando `download: true`. */
   download: string | false;
-  /**
-   * `true` quando `nasa` não veio da API (a requisição falhou, deu timeout, ou a API
-   * retornou algo inesperado) e foi preenchido com um exemplo real de APOD para que a
-   * resposta continue útil e utilizável mesmo em caso de erro. Confira `error`/`error_msg`
-   * para saber o que de fato deu errado.
-   */
+  /** `true` quando `nasa` é um exemplo embutido no módulo porque a requisição falhou. */
   fallback: boolean;
-  /**
-   * Os dados retornados pela API da NASA. Se a requisição falhar (`error: true`), este
-   * campo é preenchido com um exemplo real de APOD (e `fallback` fica `true`) em vez de
-   * ficar vazio, para que o consumidor do módulo sempre receba uma resposta funcional.
-   */
   nasa: ApodData;
 }
 
-/** Limite máximo de datas aceitas em uma única chamada a `getAPODBulk()`. */
+/** Máximo de datas por chamada de `getAPODBulk()`. */
 export const MAX_BULK_DATES = 366;
 
-/** Limite máximo de requisições feitas em paralelo por `getAPODBulk()`. */
+/** Máximo de requisições simultâneas em `getAPODBulk({ dates })`. */
 export const MAX_BULK_CONCURRENCY = 10;
 
-/** Opções aceitas por `getAPODBulk()`. */
 export interface ApodBulkOptions {
-  /** Chave da API da NASA. Padrão: a chave pública `DEMO_KEY` (com limite de requisições). */
   apiKey?: string;
-  /**
-   * Lista de datas específicas (`YYYY-MM-DD`), para lotes não-contíguos — ex.:
-   * `['2024-01-01', '2024-06-15', '2023-12-25']`. Use isso OU `startDate`/`endDate`,
-   * não ambos. Duplicatas são removidas automaticamente. Limitado a `MAX_BULK_DATES`
-   * datas por chamada.
-   */
+  /** Datas avulsas (`YYYY-MM-DD`). Use isto ou `startDate`/`endDate`, nunca os dois. Repetidas são ignoradas. */
   dates?: string[];
-  /**
-   * Início de um intervalo contínuo de datas (`YYYY-MM-DD`), usado com `endDate`.
-   * Quando ambos são informados, o pacote faz uma única requisição à API da NASA
-   * (usando os parâmetros nativos `start_date`/`end_date`), muito mais eficiente e
-   * responsável com a cota de requisições do que uma chamada por dia.
-   */
+  /** Início de um intervalo contínuo. */
   startDate?: string;
-  /** Fim do intervalo, usado com `startDate`. Padrão: hoje. */
+  /** Fim do intervalo. Padrão: hoje. */
   endDate?: string;
-  /**
-   * Tamanho máximo do lote de fato aceito nesta chamada. Nunca pode passar de
-   * `MAX_BULK_DATES`; serve para o consumidor impor um limite mais baixo ainda,
-   * se quiser. Padrão: `MAX_BULK_DATES`.
-   */
+  /** Limite de datas nesta chamada. Nunca passa de `MAX_BULK_DATES`. */
   maxDates?: number;
-  /**
-   * Quantas datas são buscadas em paralelo, quando `dates` é usado (`startDate`/`endDate`
-   * sempre vira uma única requisição, então isso não se aplica a esse caso). Nunca pode
-   * passar de `MAX_BULK_CONCURRENCY`, para não sobrecarregar a API da NASA nem estourar o
-   * limite de requisições por hora da `apiKey`. Padrão: `MAX_BULK_CONCURRENCY`.
-   */
+  /** Requisições simultâneas ao usar `dates`. Nunca passa de `MAX_BULK_CONCURRENCY`. */
   concurrency?: number;
-  /** Timeout de cada requisição individual, em milissegundos. Padrão: 15000. */
+  /** Tempo limite de cada requisição, em ms. Padrão: 15000. */
   timeout?: number;
 }
 
-/** Uma entrada do resultado de `getAPODBulk()`: a data pedida, mais a resposta correspondente. */
 export interface ApodBulkItem {
-  /** A data efetivamente associada a este item (`YYYY-MM-DD`). */
   date: string;
-  /** A resposta para esta data — tem exatamente a mesma forma do retorno de `getAPOD()`. */
   response: ApodResponse;
 }
 
-/** O objeto de resposta completo retornado por `getAPODBulk()`. */
 export interface ApodBulkResponse {
-  /** Uma entrada por data pedida (após dedupe/limite), na ordem em que foram resolvidas. */
   results: ApodBulkItem[];
-  /** Quantas datas foram efetivamente pedidas (após dedupe e aplicação do limite). */
+  /** Quantas datas entraram no lote, já sem repetidas e dentro do limite. */
   requested: number;
-  /** Quantas datas, dentre as pedidas, tiveram `error: true` na resposta. */
+  /** Quantas dessas terminaram com `error: true`. */
   failed: number;
-  /**
-   * `true` se o lote pedido excedia o limite máximo (`maxDates`/`MAX_BULK_DATES`) e
-   * precisou ser cortado. Quando `true`, `results` cobre só as primeiras `requested` datas.
-   */
+  /** `true` se o pedido passou do limite e foi cortado. */
   truncated: boolean;
 }
-

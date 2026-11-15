@@ -6,240 +6,211 @@
 [![license](https://img.shields.io/npm/l/@killovsky/nasa.svg)](./LICENSE)
 [![node](https://img.shields.io/node/v/@killovsky/nasa.svg)](./package.json)
 
-Cliente para a API **APOD** (Astronomy Picture of the Day) da NASA — sem dependências de terceiros, com CLI e suporte completo a TypeScript/ESM/CommonJS.
+Cliente para o APOD (Astronomy Picture of the Day) da NASA. Não tem dependências, funciona em ESM e CommonJS, traz os tipos do TypeScript e uma CLI.
 
-## Índice
-
-- [@killovsky/nasa](#killovskynasa)
-  - [Índice](#índice)
-  - [Instalação](#instalação)
-  - [Uso (TypeScript / ESM)](#uso-typescript--esm)
-  - [Uso (CommonJS)](#uso-commonjs)
-  - [CLI](#cli)
-  - [Opções (`ApodOptions`)](#opções-apodoptions)
-  - [Formato da resposta (`ApodResponse`)](#formato-da-resposta-apodresponse)
-  - [Requisição em lote (`getAPODBulk`)](#requisição-em-lote-getapodbulk)
-  - [Download de imagens](#download-de-imagens)
-  - [Vídeos (YouTube/Vimeo) e geração de miniatura](#vídeos-youtubevimeo-e-geração-de-miniatura)
-  - [Tratamento de erros](#tratamento-de-erros)
-  - [Segurança](#segurança)
-  - [Contribuindo](#contribuindo)
-  - [Changelog](#changelog)
-  - [Licença](#licença)
+Desde a 3.0.0 o módulo usa a API nova do APOD, baseada em WordPress (`science.nasa.gov/wp-json/wp/v2/apod-basic`). A API antiga do api.nasa.gov sai do ar em 1º de dezembro de 2026. Quem vem da 2.x deve ler a seção [Migrando da 2.x](#migrando-da-2x).
 
 ## Instalação
 
 ```bash
 npm i @killovsky/nasa
-npm i -g @killovsky/nasa   # para usar a CLI globalmente
+npm i -g @killovsky/nasa   # para usar a CLI em qualquer pasta
 ```
 
-## Uso (TypeScript / ESM)
+## Uso
 
 ```ts
 import { getAPOD } from '@killovsky/nasa';
 
-const apod = await getAPOD({ apiKey: 'DEMO_KEY', date: '2024-01-01' });
+const apod = await getAPOD({ date: '2026-09-11' });
 console.log(apod.nasa.title, apod.best_image);
 ```
 
-## Uso (CommonJS)
+CommonJS:
 
 ```js
 const { getAPOD } = require('@killovsky/nasa');
 getAPOD().then((apod) => console.log(apod.best_image));
 ```
 
+Sem `date`, `getAPOD()` traz o APOD mais recente.
+
 ## CLI
-- No powershell existe um problema ao usar "," nas datas, para se assegurar da busca correta de multiplas datas, insira as datas dentro de aspas duplas. Isso corrige.
 
 ```bash
 nasa-apod
-nasa-apod --date 2024-01-01
-nasa-apod --download --path ./pics
+nasa-apod --date 2026-09-11
+nasa-apod --download --path ./fotos
 nasa-apod --json
-nasa-apod --start 2024-01-01 --end 2024-01-07 --json
-nasa-apod --dates "2024-01-01,2023-05-05,2022-12-25"
-nasa-apod --help
+nasa-apod --start 2026-09-01 --end 2026-09-07 --json
+nasa-apod --dates "2026-09-01,2025-05-05,2024-12-25"
 ```
 
-| Opção                | Descrição                                                       |
-| --------------------- | ------------------------------------------------------------------ |
-| `--key <apiKey>`      | Chave da API da NASA (padrão: `DEMO_KEY`, com limite de requisições). |
-| `--date <data>`       | Data no formato `YYYY-MM-DD` (padrão: hoje).                       |
-| `--download`          | Baixa a imagem/miniatura para o disco.                              |
-| `--path <pasta>`      | Pasta de destino do download (padrão: `./NASA_IMAGES/`).           |
-| `--start <data>`      | Início de um intervalo contínuo, usado com `--end` (lote).          |
-| `--end <data>`        | Fim do intervalo (padrão: hoje).                                    |
-| `--dates <lista>`     | Datas específicas separadas por vírgula (lote).                    |
-| `--max <n>`           | Limite de datas no lote (padrão/teto: 366).                        |
-| `--concurrency <n>`   | Requisições em paralelo ao usar `--dates` (padrão/teto: 10).        |
-| `--json`              | Imprime a resposta completa, em JSON.                               |
-| `-h`, `--help`        | Mostra a mensagem de ajuda.                                         |
+No PowerShell, coloque as datas de `--dates` entre aspas por causa da vírgula.
 
-`--start`/`--end`/`--dates` ativam o modo de lote (veja [Requisição em lote](#requisição-em-lote-getapodbulk)); sem eles, a CLI busca uma única data.
+| Opção | Descrição |
+| --- | --- |
+| `--key <apiKey>` | Chave da API da NASA. Opcional, a API atual não exige. |
+| `--date <data>` | Data `YYYY-MM-DD`. Padrão: o APOD mais recente. |
+| `--download` | Baixa a imagem para o disco. |
+| `--path <pasta>` | Pasta do download. Padrão: `./NASA_IMAGES/`. |
+| `--start <data>` | Início de um intervalo, usado com `--end`. |
+| `--end <data>` | Fim do intervalo. Padrão: hoje. |
+| `--dates <lista>` | Datas avulsas separadas por vírgula. |
+| `--max <n>` | Limite de datas no lote (teto: 366). |
+| `--concurrency <n>` | Requisições simultâneas com `--dates` (teto: 10). |
+| `--json` | Imprime a resposta completa em JSON. |
+| `-h`, `--help` | Mostra a ajuda. |
 
-## Opções (`ApodOptions`)
+`--start`, `--end` e `--dates` ativam o modo de lote. Sem eles a CLI busca uma data só.
 
-| Campo          | Tipo      | Padrão              | Descrição                                    |
-| -------------- | --------- | ------------------- | ---------------------------------------------- |
-| `apiKey`       | `string`  | `"DEMO_KEY"`        | Chave da API da NASA (obtenha uma em [api.nasa.gov](https://api.nasa.gov) — a `DEMO_KEY` pública tem limite de requisições compartilhado). |
-| `date`         | `string`  | hoje                | Data `YYYY-MM-DD` (corrigida automaticamente, com aviso em `data_msg`, se fora do intervalo 1996–hoje ou malformada). |
-| `download`     | `boolean` | `false`             | Baixa a imagem (ou thumbnail, para vídeos) para o disco. |
-| `downloadPath` | `string`  | `"./NASA_IMAGES/"`  | Pasta de destino do download.                  |
-| `timeout`      | `number`  | `15000`             | Timeout da requisição, em ms.                  |
+## Opções de `getAPOD()`
 
-## Formato da resposta (`ApodResponse`)
+| Campo | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `date` | `string` | APOD mais recente | `YYYY-MM-DD`. Se estiver fora do intervalo 1996 até hoje ou mal formada, é corrigida e o motivo vai em `data_msg`. |
+| `apiKey` | `string` | nenhum | Opcional. Se informada, é enviada como `api_key`. |
+| `download` | `boolean` | `false` | Baixa a imagem para o disco. |
+| `downloadPath` | `string` | `./NASA_IMAGES/` | Pasta do download. |
+| `timeout` | `number` | `15000` | Tempo limite, em ms. |
 
-`getAPOD()` **nunca lança exceção** — falhas de rede, timeout, erros da API da NASA (chave inválida, limite de requisições excedido, etc.) e dados malformados são todos capturados e refletidos no próprio objeto de retorno:
+## Resposta
 
-| Campo        | Tipo                          | Descrição                                                                 |
-| ------------ | ------------------------------ | -------------------------------------------------------------------------- |
-| `date`       | `string`                       | Data efetivamente usada na requisição (`YYYY-MM-DD`).                     |
-| `error`      | `boolean`                       | `true` se a requisição falhou ou a NASA retornou um erro.                 |
-| `code`       | `number \| string`              | Código de status HTTP (ou código de erro de rede, ex.: `"ECONNREFUSED"`). |
-| `explain`    | `HttpCodeExplain \| undefined`  | Explicação legível do código de status, vinda de uma tabela embutida no pacote. |
-| `dev_msg`    | `string \| false`               | Código de erro técnico da API da NASA, quando presente.                    |
-| `data_msg`   | `string \| false`               | Aviso sobre correção automática da `date` (ex.: data futura ajustada para hoje). |
-| `error_msg`  | `string \| false`               | Mensagem de erro legível, quando `error` é `true`.                        |
-| `best_image` | `string \| false`               | A melhor URL de imagem disponível: HD para fotos, miniatura para vídeos.  |
-| `download`   | `string \| false`               | Mensagem de status do download, quando `download: true` foi usado.        |
-| `fallback`   | `boolean`                       | `true` quando `nasa` não veio da API e foi preenchido com um exemplo, para a resposta continuar útil mesmo com erro — veja [Resposta sempre útil, mesmo com erro](#resposta-sempre-útil-mesmo-com-erro). |
-| `nasa`       | `ApodData`                      | Os dados da API da NASA (título, explicação, URLs, etc.) — ou um exemplo, quando `fallback` é `true`. |
+`getAPOD()` não lança exceção. Erro de rede, tempo esgotado e erro da NASA ficam no próprio objeto:
+
+| Campo | Descrição |
+| --- | --- |
+| `date` | Data do APOD (`YYYY-MM-DD`). |
+| `error` | `true` se a requisição falhou. |
+| `code` | Status HTTP, ou o código do erro de rede (por exemplo `ECONNREFUSED`). |
+| `explain` | Explicação do status, vinda de uma tabela do pacote. |
+| `error_msg` | Mensagem de erro, quando há. |
+| `dev_msg` | Código técnico do erro, quando a API informa (por exemplo `rest_no_route`). |
+| `data_msg` | Aviso de que a data pedida foi corrigida. |
+| `best_image` | Melhor imagem disponível. |
+| `download` | Resultado do download, quando pedido. |
+| `fallback` | `true` se `nasa` é um exemplo embutido no pacote. |
+| `nasa` | Os dados do APOD, descritos abaixo. |
+
+Campos de `nasa`:
+
+| Campo | Descrição |
+| --- | --- |
+| `date`, `post_id`, `title` | Data, ID do post no WordPress e título. |
+| `media_type` | `image`, `video` ou `iframe`. |
+| `explanation` | Explicação em HTML, como a API entrega. |
+| `explanation_text` | A mesma explicação em texto puro, sem o rótulo "Explanation:" e sem a dica do dia seguinte. |
+| `credit`, `credit_text` | Crédito em HTML e em texto puro. |
+| `copyright`, `alt` | Direitos autorais e texto alternativo da imagem. |
+| `permalink`, `url` | Página do APOD em science.nasa.gov. Os dois têm o mesmo valor. |
+| `hdurl` | Imagem em tamanho grande. Em vídeos, é a imagem de capa. |
+| `video_url` | Endereço do vídeo (MP4 ou iframe), lido de `basic_html`. `false` se não há vídeo. |
+| `basic_html`, `basic_html_url` | Página completa do APOD em HTML e o endereço dela em texto puro. |
+
+Campo que a API não mandar vira `false`. `explanation_text`, `credit_text` e `video_url` são calculados pelo módulo.
 
 ```ts
-const apod = await getAPOD({ date: '2024-01-01' });
+const apod = await getAPOD({ date: '2026-09-11' });
 
 if (apod.error) {
-  console.error(apod.error_msg); // Os valores como "apod.nasa" ainda estarão disponiveis em modo fallback
+  console.error(apod.error_msg);
+  // apod.nasa tem um exemplo embutido, e apod.fallback é true
 } else {
   console.log(apod.nasa.title);
-  console.log(apod.nasa.explanation);
-  console.log(apod.best_image); // HD, padrão, ou miniatura de vídeo — o que estiver disponível
+  console.log(apod.nasa.explanation_text);
+  console.log(apod.best_image);
 }
 ```
 
-- Em casos de falhas, o sistema devolve um objeto JSON válido com dados reais da NASA, serve como uma resposta de fallback que evita que dados invalidos sejam usados por aplicativos que usem esse módulo.
+Quando a requisição falha, `nasa` e `best_image` recebem um dos APODs de exemplo guardados em `src/fallbackApods.json` e `fallback` fica `true`. Assim um app que mostra a "foto do dia" sempre tem algo para exibir. Confira `error` antes de tratar o resultado como o APOD pedido.
 
-```ts
-const apod = await getAPOD({ apiKey: 'chave-invalida' });
-
-console.log(apod.error);      // true
-console.log(apod.fallback);   // true
-console.log(apod.nasa.title); // "SpaceX Rocket Launch Plume over California" (ou outro exemplo)
-console.log(apod.best_image); // uma URL de imagem real, utilizável — nunca `false` só por causa do erro
-```
-
-Isso é útil para qualquer interface (um app, um bot, um bloco de "foto do dia" em uma página) que prefere sempre ter algo para mostrar em vez de lidar com um estado vazio só porque a API da NASA teve um problema momentâneo.
-
-## Requisição em lote (`getAPODBulk`)
-
-Para buscar várias datas de uma vez, de forma segura e responsável com a cota de requisições da API da NASA:
+## Vários APODs de uma vez
 
 ```ts
 import { getAPODBulk } from '@killovsky/nasa';
 
-// Intervalo contínuo — vira 1 única requisição HTTP (start_date/end_date nativos da API)
-const week = await getAPODBulk({ startDate: '2024-01-01', endDate: '2024-01-07' });
+// Intervalo: usa a listagem da API (date_from/date_to)
+const week = await getAPODBulk({ startDate: '2026-09-01', endDate: '2026-09-07' });
 
-// Datas específicas, não-contíguas — busca em paralelo, com concorrência limitada
-const picks = await getAPODBulk({ dates: ['2024-01-01', '2024-06-15', '2023-12-25'] });
+// Datas avulsas: uma requisição por data
+const picks = await getAPODBulk({ dates: ['2026-09-01', '2026-06-15', '2025-12-25'] });
 
 for (const { date, response } of week.results) {
-  if (response.error) {
-    console.error(date, response.error_msg);
-  } else {
-    console.log(date, response.nasa.title, response.best_image);
-  }
+  if (response.error) console.error(date, response.error_msg);
+  else console.log(date, response.nasa.title, response.best_image);
 }
 
-console.log(`${week.requested} pedidas, ${week.failed} com erro, truncado: ${week.truncated}`);
+console.log(`${week.requested} pedidas, ${week.failed} com erro, cortado: ${week.truncated}`);
 ```
 
-Use **`dates`** OU **`startDate`/`endDate`**, nunca os dois na mesma chamada (`getAPODBulk` lança `TypeError` se você tentar).
+Use `dates` ou `startDate`/`endDate`, nunca os dois juntos (lança `TypeError`).
 
-| Campo         | Tipo       | Padrão | Descrição                                                                 |
-| ------------- | ---------- | ------ | -------------------------------------------------------------------------- |
-| `apiKey`      | `string`   | `"DEMO_KEY"` | Igual a `getAPOD()`.                                                  |
-| `dates`       | `string[]` | —      | Lista de datas específicas. Duplicatas são removidas automaticamente.       |
-| `startDate`   | `string`   | —      | Início de um intervalo contínuo, usado com `endDate`.                      |
-| `endDate`     | `string`   | hoje   | Fim do intervalo, usado com `startDate`.                                    |
-| `maxDates`    | `number`   | `366`  | Teto de datas no lote. Nunca passa de `MAX_BULK_DATES` (366), mesmo se você pedir mais. |
-| `concurrency` | `number`   | `10`   | Requisições em paralelo (só se aplica ao caminho `dates`). Nunca passa de `MAX_BULK_CONCURRENCY` (10). |
-| `timeout`     | `number`   | `15000`| Timeout de cada requisição individual, em ms.                              |
+A listagem da API traz no máximo 25 itens por página, então um intervalo de 30 dias faz 2 requisições. No modo de intervalo os resultados vêm em ordem crescente de data.
 
-O formato da CLI equivalente:
+| Campo | Tipo | Padrão | Descrição |
+| --- | --- | --- | --- |
+| `dates` | `string[]` | nenhum | Datas avulsas. Repetidas são ignoradas. |
+| `startDate` | `string` | nenhum | Início do intervalo. |
+| `endDate` | `string` | hoje | Fim do intervalo. |
+| `maxDates` | `number` | `366` | Limite de datas. Nunca passa de `MAX_BULK_DATES` (366). |
+| `concurrency` | `number` | `10` | Requisições simultâneas com `dates`. Nunca passa de `MAX_BULK_CONCURRENCY` (10). |
+| `apiKey` | `string` | nenhum | Igual a `getAPOD()`. |
+| `timeout` | `number` | `15000` | Tempo limite de cada requisição, em ms. |
 
-```bash
-nasa-apod --start 2024-01-01 --end 2024-01-07 --json
-nasa-apod --dates 2024-01-01,2023-05-05,2022-12-25 --concurrency 5
-```
+Cada item de `results` tem a forma `{ date, response }`, e `response` é igual ao retorno de `getAPOD()`. Uma data com problema não derruba as outras. Se o pedido passar do limite, ele é cortado e `truncated` vem `true`.
 
 ## Download de imagens
 
 ```ts
 const apod = await getAPOD({ download: true, downloadPath: './fotos' });
-console.log(apod.download); // "Download concluído, salvo em fotos/2024-01-01.jpg"
+console.log(apod.download); // "Download concluído, salvo em ..."
 ```
 
-- Se `downloadPath` não for informado, a pasta padrão `./NASA_IMAGES/` é criada automaticamente.
-- Se a imagem daquela data já tiver sido baixada antes, o download é pulado (sem sobrescrever).
-- O nome do arquivo é sempre `<data>.jpg`, onde `<data>` é validada antes de virar parte do caminho — veja [Segurança](#segurança).
+- Sem `downloadPath`, a pasta `./NASA_IMAGES/` é criada.
+- O arquivo é salvo como `<data>.jpg`. Se já existir, não é sobrescrito.
+- Se a requisição à API falhou, nada é baixado.
 
-## Vídeos (YouTube/Vimeo) e geração de miniatura
+## Vídeos
 
-Quando o APOD do dia é um vídeo (`media_type: "video"`) e a NASA não retorna uma `thumbnail_url` própria, o pacote deriva uma automaticamente a partir da URL do vídeo, para YouTube e Vimeo:
+Quando `media_type` é `video` ou `iframe`, o endereço do vídeo fica em `nasa.video_url`. Os vídeos hospedados pela NASA são MP4. Se `hdurl` estiver vazio e o vídeo for do YouTube ou do Vimeo, `best_image` usa a miniatura dele. As duas funções também podem ser usadas direto:
 
 ```ts
 import { youtubeThumbnail, vimeoThumbnail } from '@killovsky/nasa';
 
 youtubeThumbnail('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
-// => 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg'
+// 'https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg'
 
 vimeoThumbnail('https://vimeo.com/927766087');
-// => 'https://vumbnail.com/927766087.jpg'
+// 'https://vumbnail.com/927766087.jpg'
 ```
 
-Essa miniatura (quando derivada) também vira `best_image` automaticamente, já que não existe uma "URL de imagem HD" para um vídeo.
+## Migrando da 2.x
 
-## Tratamento de erros
-
-`getAPOD()` é desenhada para nunca lançar (`throw`) — confira sempre `error`/`error_msg` em vez de usar `try/catch`:
-
-```ts
-const apod = await getAPOD({ apiKey: 'chave-invalida' });
-if (apod.error) {
-  console.error(`Erro ${apod.code}: ${apod.error_msg}`);
-}
-```
-
-Isso vale tanto para erros de rede (timeout, DNS, conexão recusada) quanto para erros retornados pela própria API da NASA (chave inválida, limite de requisições excedido, data fora do intervalo suportado, etc.).
+- A API trocou de endereço. Chave não é mais necessária, `apiKey` continua aceita mas é opcional.
+- `nasa.url` agora é a página do APOD, e não o arquivo da imagem. Para a imagem use `nasa.hdurl` ou `best_image`.
+- `explanation` e `credit` agora vêm em HTML. Para texto puro use `explanation_text` e `credit_text`.
+- Sem `date`, `getAPOD()` pede o APOD mais recente em vez de "hoje" em UTC, o que evita erro nas horas em que o dia UTC já virou e o APOD ainda não foi publicado.
+- Campos novos: `post_id`, `permalink`, `alt`, `basic_html`, `basic_html_url`, `video_url`.
+- Campos removidos: `service_version` e `thumbnail_url`. A API nova também não oferece mais `concept_tags`, `hd` nem `thumbs`.
+- Em `getAPODBulk()`, intervalos grandes fazem uma requisição por página de 25 itens, e não uma só.
+- Com erro, o download não é mais tentado.
 
 ## Segurança
 
-Este pacote pode escrever arquivos em disco (`download: true`) a partir de dados que vêm de uma resposta de rede — a resposta da API da NASA. Duas proteções relevantes:
+O módulo grava arquivos em disco quando `download: true`, a partir de dados que vêm da rede:
 
-- **Nome do arquivo**: o campo de data retornado pela API só é usado no caminho do arquivo se estiver estritamente no formato `YYYY-MM-DD`; qualquer outro valor é substituído por um nome seguro gerado localmente, e o caminho final é sempre verificado contra a pasta de destino.
-- **URL da imagem**: só `http:`/`https:` são aceitos antes de qualquer `fetch()` de download; outros esquemas (como `file:`) são rejeitados.
-- **Extração de ID do Vimeo**: a URL do vídeo (dado de rede, não confiável) nunca é processada com uma regex de custo não-linear. A extração do ID numérico é feita dividindo a URL por `/` e percorrendo os segmentos — uma operação O(n), sem risco de ReDoS (corrigido na 2.0.1; veja o [Changelog](#changelog)).
-- **Lote de datas (`getAPODBulk`)**: tamanho de lote e concorrência são sempre limitados no lado do cliente (`MAX_BULK_DATES`, `MAX_BULK_CONCURRENCY`), mesmo se valores maiores forem pedidos explicitamente — veja [Requisição em lote](#requisição-em-lote-getapodbulk).
+- A data da resposta só entra no nome do arquivo se tiver o formato `YYYY-MM-DD`, e o caminho final é conferido contra a pasta de destino.
+- Só URLs `http:` e `https:` são baixadas.
+- O tamanho do lote e a concorrência de `getAPODBulk()` têm teto no próprio módulo.
 
-Para detalhes completos e como reportar uma vulnerabilidade, veja [SECURITY.md](./SECURITY.md).
+Detalhes e como reportar uma vulnerabilidade: [SECURITY.md](./SECURITY.md).
 
 ## Contribuindo
 
-Contribuições são bem-vindas! Veja o [guia de contribuição](./CONTRIBUTING.md) para configurar o ambiente, rodar os testes e o fluxo de Pull Request. Ao participar, siga o [Código de Conduta](./CODE_OF_CONDUCT.md).
-
-Para reportar vulnerabilidades de segurança, siga o processo em [SECURITY.md](./SECURITY.md) — não abra uma issue pública.
-
-## Changelog
-
-Veja [CHANGELOG.md](./CHANGELOG.md) para o histórico de versões.
+Veja o [guia de contribuição](./CONTRIBUTING.md) e o [Código de Conduta](./CODE_OF_CONDUCT.md). O histórico de versões está em [CHANGELOG.md](./CHANGELOG.md).
 
 ## Licença
 
-MIT — veja [LICENSE](./LICENSE).
+MIT, veja [LICENSE](./LICENSE).
 
----
-
-Este projeto não é afiliado, endossado ou patrocinado pela NASA. "NASA" e "APOD" são marcas da *National Aeronautics and Space Administration*; este pacote é apenas um cliente de código aberto para a API pública delas.
+Este projeto não é afiliado, endossado ou patrocinado pela NASA. "NASA" e "APOD" pertencem à National Aeronautics and Space Administration; este pacote é só um cliente aberto para a API pública dela.

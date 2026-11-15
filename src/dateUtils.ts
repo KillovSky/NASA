@@ -1,11 +1,7 @@
-/**
- * O arquivo APOD da NASA começa em 1995, mas não tem dados para o ano inteiro,
- * então limitamos de forma conservadora o ano mínimo aceito para 1996 (assim
- * deu para manter o comportamento do módulo v1.x.x).
- */
+/** O APOD começa em junho de 1995; o módulo aceita a partir de 1996 desde a v1. */
 export const MIN_YEAR = 1996;
 
-/** Resultado de `normalizeDate()`: a data já corrigida, mais um aviso opcional explicando o que foi ajustado. */
+/** Data já corrigida e, se algo foi ajustado, um aviso dizendo o quê. */
 export interface NormalizedDate {
   date: string;
   warning: string | null;
@@ -16,16 +12,14 @@ function todayParts(): [string, string, string] {
   return iso.split('-') as [string, string, string];
 }
 
-/** Quantos dias tem um mês em um determinado ano (considerando anos bissextos para fevereiro). */
+/** Dias de um mês, contando ano bissexto. */
 function daysInMonth(year: number, month: number): number {
   return new Date(year, month, 0).getDate();
 }
 
 /**
- * Valida e normaliza uma string de data `YYYY-MM-DD` contra o intervalo suportado
- * pela NASA, ajustando para a data de hoje (e reportando um aviso) sempre que a
- * entrada estiver fora do intervalo, malformada, ou for uma data de calendário
- * que não existe (ex: "2024-02-30").
+ * Confere uma data `YYYY-MM-DD` contra o intervalo do APOD. O que estiver fora do
+ * intervalo, mal formado ou inexistente (como 2024-02-30) é corrigido, com um aviso.
  */
 export function normalizeDate(input: string): NormalizedDate {
   const [ty, tm, td] = todayParts();
@@ -65,10 +59,8 @@ export function normalizeDate(input: string): NormalizedDate {
     m = tm;
   }
 
-  // Checa contra o número real de dias do mês (considerando anos bissextos),
-  // não apenas "≤ 31" — `new Date('2024-02-30')` não retorna Invalid Date, ele
-  // rola silenciosamente para 1º de março, então essa validação não pode
-  // depender só do parsing do `Date` no final da função.
+  // `new Date('2024-02-30')` não dá erro, vira 1º de março. Por isso o dia é
+  // conferido contra a quantidade real de dias do mês.
   const maxDayInMonth = daysInMonth(Number(y), Number(m));
 
   if (!Number.isFinite(dNum) || dNum < 1 || dNum > maxDayInMonth || (y === ty && m === tm && dNum > Number(td))) {
@@ -84,4 +76,13 @@ export function normalizeDate(input: string): NormalizedDate {
   }
 
   return { date: candidate, warning };
+}
+
+/**
+ * Converte `YYYY-MM-DD` para o código `YYMMDD` que a API nova usa nas rotas e nos
+ * filtros (`2026-09-11` vira `260911`). Devolve `null` se a data não tiver esse formato.
+ */
+export function toLegacyDate(isoDate: string): string | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(isoDate);
+  return match ? `${match[1].slice(2)}${match[2]}${match[3]}` : null;
 }

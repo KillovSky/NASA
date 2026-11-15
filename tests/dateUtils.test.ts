@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeDate, MIN_YEAR } from '../dist/index.js';
+import { normalizeDate, toLegacyDate, MIN_YEAR } from '../dist/index.js';
 
 function today(): string {
   return new Date().toISOString().split('T')[0];
@@ -45,7 +45,7 @@ test('normalizeDate: data futura é corrigida para hoje', () => {
 
 test('normalizeDate: dia inexistente no mês (30 de fevereiro) é corrigido para o último dia real', () => {
   const result = normalizeDate('2024-02-30');
-  // E.g: 2024 é bissexto: fevereiro tem 29 dias
+  // 2024 é bissexto
   assert.equal(result.date, '2024-02-29');
   assert.match(result.warning ?? '', /Dia inválido/);
 });
@@ -64,4 +64,16 @@ test('normalizeDate: entrada com texto no lugar de números cai para hoje', () =
   const result = normalizeDate('abcd-ef-gh');
   assert.equal(result.date, today());
   assert.notEqual(result.warning, null);
+});
+
+test('toLegacyDate: converte YYYY-MM-DD para YYMMDD', () => {
+  assert.equal(toLegacyDate('2026-09-11'), '260911');
+  assert.equal(toLegacyDate('1999-12-31'), '991231');
+  assert.equal(toLegacyDate('2000-01-05'), '000105');
+});
+
+test('toLegacyDate: formato diferente devolve null', () => {
+  assert.equal(toLegacyDate('260911'), null);
+  assert.equal(toLegacyDate('2026-9-11'), null);
+  assert.equal(toLegacyDate(''), null);
 });

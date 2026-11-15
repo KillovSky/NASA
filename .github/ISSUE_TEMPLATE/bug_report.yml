@@ -1,4 +1,4 @@
-name: "🐛 Relatar um Bug"
+name: "Relatar um bug"
 description: "Encontrou um problema? Descreva-o aqui para que possamos investigar."
 labels: ["bug", "needs-triage"]
 body:
@@ -9,7 +9,7 @@ body:
 
         - Verifique se já existe uma issue similar em aberto.
         - Certifique-se de estar usando a **versão mais recente** do projeto.
-        - Se o problema for "requisição falhou" ou "limite excedido", confira primeiro se não é o limite de taxa da chave `DEMO_KEY` da NASA (veja [api.nasa.gov](https://api.nasa.gov) para obter uma chave própria).
+        - Se a requisição falhou, confira se o endereço `https://science.nasa.gov/wp-json/wp/v2/apod-basic` responde no navegador. Pode ser instabilidade da NASA.
 
   - type: checkboxes
     id: latest_version
@@ -68,11 +68,12 @@ body:
       description: "Em qual parte do sistema o problema ocorre?"
       multiple: true
       options:
-        - "Busca do APOD (getAPOD)"
+        - "getAPOD"
+        - "getAPODBulk"
         - "Download de imagem/thumbnail"
         - "CLI (nasa-apod)"
         - "Normalização de data"
-        - "Redes / API da NASA"
+        - "Rede / API da NASA"
         - "Build / TypeScript"
         - "Testes"
         - "Outro"
@@ -83,7 +84,7 @@ body:
     id: description
     attributes:
       label: "Descrição do problema"
-      description: "Descreva o que está acontecendo de forma clara e objetiva."
+      description: "O que está acontecendo?"
       placeholder: "Ao fazer X, o sistema faz Y, mas o esperado era Z."
     validations:
       required: true
@@ -112,11 +113,11 @@ body:
     id: logs
     attributes:
       label: "Logs de erro"
-      description: "Cole o stack trace ou mensagem de erro. Use blocos de código. **Nunca cole sua chave de API real** — substitua por algo como `SUA_CHAVE_AQUI`."
+      description: "Cole o stack trace ou a mensagem de erro. Se usar chave de API, não cole a chave real."
       render: shell
 
   - type: textarea
     id: extra
     attributes:
       label: "Informações adicionais"
-      description: "Capturas de tela, configurações relevantes (sem chaves de API!), contexto extra."
+      description: "Capturas de tela, configurações relevantes (sem chaves de API) e qualquer contexto extra."

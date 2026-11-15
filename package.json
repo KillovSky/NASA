@@ -1,7 +1,7 @@
 {
   "name": "@killovsky/nasa",
-  "version": "2.0.1",
-  "description": "Cliente da NASA APOD (Astronomy Picture of the Day) para Node.js sem dependências, com CLI e suporte completo a TypeScript, ESM e CommonJS.",
+  "version": "3.0.0",
+  "description": "Cliente da NASA APOD (Astronomy Picture of the Day) para Node.js, sem dependências, com CLI e TypeScript.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

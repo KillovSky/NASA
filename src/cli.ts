@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 import { getAPOD, getAPODBulk, MAX_BULK_CONCURRENCY, MAX_BULK_DATES } from './index.js';
 
-const HELP = `nasa-apod — Foto Astronômica do Dia da NASA, direto do terminal
+const HELP = `nasa-apod: Foto Astronômica do Dia da NASA no terminal
 
 Uso:
   nasa-apod [opções]
 
 Opções (data única):
-  --key <apiKey>     Chave da API da NASA (padrão: DEMO_KEY, com limite de requisições)
-  --date <data>      Data no formato YYYY-MM-DD (padrão: hoje)
+  --key <apiKey>     Chave da API da NASA (opcional, a API atual não exige)
+  --date <data>      Data no formato YYYY-MM-DD (padrão: o APOD mais recente)
   --download         Baixa a imagem/miniatura para o disco
   --path <pasta>     Pasta de destino do download (padrão: ./NASA_IMAGES/)
   --json             Imprime a resposta JSON completa
   -h, --help         Mostra esta mensagem de ajuda
 
-Opções (lote de datas — use --start/--end OU --dates, não os dois):
-  --start <data>     Início de um intervalo contínuo (usado com --end); 1 única requisição à API
+Opções (lote de datas, use --start/--end OU --dates, não os dois):
+  --start <data>     Início de um intervalo contínuo (usado com --end)
   --end <data>       Fim do intervalo (padrão: hoje)
   --dates <lista>    Datas específicas separadas por vírgula, ex.: 2024-01-01,2023-05-05
   --max <n>          Limite de datas no lote (padrão/teto: ${MAX_BULK_DATES})
@@ -23,10 +23,10 @@ Opções (lote de datas — use --start/--end OU --dates, não os dois):
 
 Exemplos:
   nasa-apod
-  nasa-apod --date 2024-01-01
+  nasa-apod --date 2026-09-11
   nasa-apod --download --path ./fotos
-  nasa-apod --start 2024-01-01 --end 2024-01-07 --json
-  nasa-apod --dates 2024-01-01,2023-05-05,2022-12-25 --json
+  nasa-apod --start 2026-09-01 --end 2026-09-07 --json
+  nasa-apod --dates 2026-09-01,2025-05-05,2024-12-25 --json
 `;
 
 interface CliOptions {
@@ -119,12 +119,12 @@ async function runBulk(opts: CliOptions, json: boolean): Promise<void> {
 
   for (const item of result.results) {
     if (item.response.error) {
-      console.log(`${item.date}: ERRO — ${item.response.error_msg || item.response.dev_msg}`);
+      console.log(`${item.date}: ERRO: ${item.response.error_msg || item.response.dev_msg}`);
       if (item.response.fallback && item.response.nasa.title) {
-        console.log(`  (exemplo em vez disso: ${item.response.nasa.title} — ${item.response.best_image})`);
+        console.log(`  (exemplo: ${item.response.nasa.title}, ${item.response.best_image})`);
       }
     } else {
-      console.log(`${item.date}: ${item.response.nasa.title} — ${item.response.best_image}`);
+      console.log(`${item.date}: ${item.response.nasa.title} | ${item.response.best_image}`);
     }
   }
 
@@ -157,23 +157,22 @@ async function main(): Promise<void> {
     console.error(`Erro: ${result.error_msg || result.dev_msg}`);
     process.exitCode = 1;
 
-    // Mesmo com erro, a resposta traz uma foto de exemplo utilizável (ver
-    // `fallback` no JSON) — exibida aqui para não deixar o usuário do CLI
-    // sem nada em mãos quando a API da NASA falha.
+    // Em caso de erro, `nasa` traz um exemplo embutido (`fallback`).
     if (result.fallback && result.nasa.title) {
-      console.error(`\nExibindo um exemplo em vez disso: ${result.nasa.title} (${result.nasa.date})`);
+      console.error(`\nExemplo embutido: ${result.nasa.title} (${result.nasa.date})`);
       console.error(`Imagem: ${result.best_image}`);
     }
     return;
   }
 
   console.log(`${result.nasa.title} (${result.nasa.date})`);
-  console.log(result.nasa.explanation);
+  console.log(result.nasa.explanation_text);
   console.log(`\nImagem: ${result.best_image}`);
+  if (result.nasa.video_url) console.log(`Vídeo: ${result.nasa.video_url}`);
   if (result.download) console.log(`Download: ${result.download}`);
 }
 
 main().catch((err) => {
-  console.error('[nasa-apod] erro fatal:', err instanceof Error ? err.message : err);
+  console.error('[nasa-apod] erro:', err instanceof Error ? err.message : err);
   process.exit(1);
 });
