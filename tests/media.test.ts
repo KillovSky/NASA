@@ -42,3 +42,22 @@ test('htmlToText: tira tags, decodifica entidades e converte <br>', () => {
 test('htmlToText: não vira tag o que veio como entidade', () => {
   assert.equal(htmlToText('&lt;b&gt;texto&lt;/b&gt;'), '<b>texto</b>');
 });
+
+test('htmlToText: tags aninhadas ou quebradas não deixam tag para trás', () => {
+  assert.equal(htmlToText('<<b>script>alert(1)<</b>/script>'), 'script>alert(1)/script>');
+  assert.equal(htmlToText('<scr<b>ipt>x'), 'ipt>x');
+  for (const input of ['<<b>script>', '<<<a>>>img src=x onerror=y>', '<a<b>>c']) {
+    assert.doesNotMatch(htmlToText(input), /<[a-z/!?]/i, input);
+  }
+});
+
+test('htmlToText: "<" solto em texto comum é preservado e tag sem fechamento é descartada', () => {
+  assert.equal(htmlToText('1 < 2 e 3 > 2'), '1 < 2 e 3 > 2');
+  assert.equal(htmlToText('antes <a href="x'), 'antes');
+});
+
+test('htmlToText: entrada enorme sem fechamento não trava', () => {
+  const start = Date.now();
+  htmlToText(`<a ${'<'.repeat(100_000)}`);
+  assert.ok(Date.now() - start < 1000);
+});

@@ -25,6 +25,9 @@ A NASA migrou o APOD para a API do WordPress (`science.nasa.gov/wp-json/wp/v2/ap
 - Exportações novas: `toLegacyDate()` e `htmlToText()`.
 - Download: confere o status HTTP antes de gravar o arquivo.
 
+### Segurança
+- `htmlToText()` remove tags com uma passada pelos caracteres, e não com `replace` e regex, que deixava sobrar tags em entradas como `<<b>script>` (CodeQL #2).
+
 ### Removido
 - `service_version` e `thumbnail_url`. A API nova não oferece `concept_tags`, `hd` nem `thumbs`.
 

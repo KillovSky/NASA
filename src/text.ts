@@ -22,10 +22,37 @@ function decodeEntities(text: string): string {
   });
 }
 
+/**
+ * Remove as tags de um trecho de HTML. Faz uma passada só pelos caracteres em vez de
+ * usar `replace` com regex: com regex, entradas como `<<b>script>` deixam uma tag
+ * nova para trás depois da remoção. Aqui um `<` só fica como texto quando vem seguido
+ * de espaço, dígito, `=` ou do fim da string (como em "1 < 2"); qualquer outro `<`
+ * abre uma tag, que vai até o próximo `>`. `<br>` vira quebra de linha.
+ */
+function stripTags(html: string): string {
+  let out = '';
+  let i = 0;
+
+  while (i < html.length) {
+    const ch = html[i];
+    if (ch !== '<' || /^[\s\d=]?$/.test(html[i + 1] ?? '')) {
+      out += ch;
+      i += 1;
+      continue;
+    }
+
+    const end = html.indexOf('>', i + 1);
+    if (end === -1) break; // tag sem fechamento: descarta o resto
+    if (/^<br[\s/>]/i.test(html.slice(i, end + 1))) out += '\n';
+    i = end + 1;
+  }
+
+  return out;
+}
+
 /** Tira as tags de um trecho de HTML e decodifica as entidades. `<br>` vira quebra de linha. */
 export function htmlToText(html: string): string {
-  const withoutTags = html.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '');
-  return decodeEntities(withoutTags)
+  return decodeEntities(stripTags(html))
     .replace(/[ \t\u00a0]+/g, ' ')
     .trim();
 }
